@@ -1,6 +1,5 @@
-import { pgTable, text, timestamp, boolean, decimal, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-// Better-auth tables
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -10,7 +9,7 @@ export const user = pgTable("user", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
 
@@ -20,7 +19,7 @@ export const session = pgTable("session", {
   token: text("token").notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
@@ -45,7 +44,7 @@ export const account = pgTable("account", {
   password: text("password"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
 
@@ -57,22 +56,6 @@ export const verification = pgTable("verification", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
-
-// Application tables
-export const subscriptions = pgTable('subscriptions', {
-  id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
-  name: varchar('name', { length: 255 }).notNull(),
-  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
-  billingCycle: varchar('billing_cycle', { length: 50 }).notNull(),
-  nextBillingDate: timestamp('next_billing_date').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
-    .$onUpdate(() => new Date())
-    .notNull(),
-});
-
-

@@ -1,5 +1,5 @@
 {
-  "id": "b75417d5-8b49-478f-a3b7-96b14334e585",
+  "id": "28a23888-eca0-4a41-bde8-76c9d874a3a7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -317,7 +317,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
@@ -341,15 +341,24 @@
         },
         "billing_cycle": {
           "name": "billing_cycle",
-          "type": "varchar(50)",
+          "type": "billing_cycle",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'monthly'"
         },
         "next_billing_date": {
           "name": "next_billing_date",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         },
         "created_at": {
           "name": "created_at",
@@ -388,7 +397,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.billing_cycle": {
+      "name": "billing_cycle",
+      "schema": "public",
+      "values": [
+        "weekly",
+        "monthly",
+        "yearly"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

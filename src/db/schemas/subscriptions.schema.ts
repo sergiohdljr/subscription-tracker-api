@@ -1,11 +1,11 @@
-import { pgTable, text, timestamp, decimal, varchar, boolean, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, decimal, varchar, boolean, pgEnum, serial } from 'drizzle-orm/pg-core'
 import { user } from './auth.schema'
 
 export const billingCycle = pgEnum('billing_cycle', ['weekly', 'monthly', 'yearly'] as const)
 
 // Application tables
 export const subscriptions = pgTable('subscriptions', {
-  id: text('id').primaryKey(),
+  id: serial('id').primaryKey().notNull(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 255 }).notNull(),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),

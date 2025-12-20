@@ -10,9 +10,11 @@ async function bootstrap() {
 
   // Register plugins
   await server.register(swaggerPlugin)
+
+  // Register better-auth handler first (before docs routes to avoid conflicts)
   await server.register(betterAuthPlugin)
 
-  // Register routes
+  // Register documentation routes (these should not conflict as they're just for docs)
   await server.register(authDocsRoutes)
 
   server.listen({ port: 8080 }, (err, address) => {

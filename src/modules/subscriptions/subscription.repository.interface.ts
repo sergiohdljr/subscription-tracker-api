@@ -6,4 +6,5 @@ export interface SubscriptionRepositoryInterface {
   delete(id: number): Promise<void>
   findById(id: number): Promise<Subscription | null>
   findAll(): Promise<Subscription[]>
+  findExpiringSoon(daysBeforeExpiration: number, userId: string): Promise<Subscription[]>
 }

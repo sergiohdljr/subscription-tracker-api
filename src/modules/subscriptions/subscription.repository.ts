@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { subscriptions } from "../../db/schema";
 import type * as schema from "../../db/schema";
@@ -8,7 +8,7 @@ import { CreateSubscription, Subscription, UpdateSubscription } from "./subscrip
 
 
 export class SubscriptionDrizzleRepository implements SubscriptionRepositoryInterface {
-  constructor(private readonly db: NodePgDatabase<typeof schema>) {}
+  constructor(private readonly db: NodePgDatabase<typeof schema>) { }
 
   async create(subscription: CreateSubscription): Promise<Record<string, number>> {
     const [result] = await this.db.insert(subscriptions).values(subscription).returning({
@@ -34,6 +34,15 @@ export class SubscriptionDrizzleRepository implements SubscriptionRepositoryInte
 
   async findAll(): Promise<Subscription[]> {
     const result = await this.db.select().from(subscriptions)
+    return result
+  }
+
+  async findExpiringSoon(daysBeforeExpiration: number = 15, userId: string): Promise<Subscription[]> {
+    const now = new Date()
+    const expirationDate = new Date(now.getTime() + daysBeforeExpiration * 24 * 60 * 60 * 1000)
+    const result = await this.db.select()
+      .from(subscriptions)
+      .where(and(gt(subscriptions.nextBillingDate, expirationDate), eq(subscriptions.active, true), eq(subscriptions.userId, userId)))
     return result
   }
 }

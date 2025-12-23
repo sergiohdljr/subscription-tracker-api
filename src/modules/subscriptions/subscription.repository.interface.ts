@@ -2,9 +2,9 @@ import { CreateSubscription, Subscription, UpdateSubscription } from "./subscrip
 
 export interface SubscriptionRepositoryInterface {
   create(subscription: CreateSubscription): Promise<Record<string, number>>
-  update(id: number, subscription: UpdateSubscription): Promise<Subscription>
-  delete(id: number): Promise<void>
-  findById(id: number): Promise<Subscription | null>
-  findAll(): Promise<Subscription[]>
+  update(id: string, subscription: UpdateSubscription): Promise<Subscription>
+  delete(id: string): Promise<void>
+  findById(id: string): Promise<Subscription | null>
+  findAll(id: string): Promise<Subscription[]>
   findExpiringSoon(daysBeforeExpiration: number, userId: string): Promise<Subscription[]>
 }

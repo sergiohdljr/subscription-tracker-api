@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify'
+import type { FastifyInstance } from 'fastify'
 import fastifySwagger from '@fastify/swagger'
 import fastifyScalar from '@scalar/fastify-api-reference'
 
@@ -33,7 +33,7 @@ export async function swaggerPlugin(server: FastifyInstance) {
     }
   })
 
-  server.addHook('onReady', async function () {
+  server.addHook('onReady', async () => {
     const spec = server.swagger()
 
     if (!spec.paths) spec.paths = {}

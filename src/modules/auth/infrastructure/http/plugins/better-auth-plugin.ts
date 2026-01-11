@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { auth } from '../../better-auth/better-auth-config'
 
 async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -21,7 +21,7 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
     });
 
     // Get request body
-    let body: string | undefined = undefined;
+    let body: string | undefined ;
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       if (request.body) {
         // If body is already a string, use it; otherwise stringify
@@ -90,7 +90,7 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
 export async function betterAuthPlugin(server: FastifyInstance) {
   // Register better-auth handler for all routes under /api/auth
   // Using a plugin with prefix to handle all sub-routes
-  await server.register(async function (fastify) {
+  await server.register(async (fastify) => {
     // Catch-all route for any path under /api/auth
     fastify.all('/*', betterAuthHandler);
   }, { prefix: '/api/auth' });

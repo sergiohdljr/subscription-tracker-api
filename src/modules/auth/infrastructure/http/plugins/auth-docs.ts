@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { auth } from '../../better-auth/better-auth-config'
 
 async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -21,7 +21,7 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
     });
 
     // Get request body
-    let body: string | undefined = undefined;
+    let body: string | undefined ;
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       if (request.body) {
         if (typeof request.body === 'string') {

@@ -1,5 +1,5 @@
-import { BillingCycle } from "../value-objects/billing-cycle";
-import { Money } from "../value-objects/money";
+import type { BillingCycle } from "../value-objects/billing-cycle";
+import type { Money } from "../value-objects/money";
 
 export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "TRIAL";
 export type Currency = "BRL" | "USD";

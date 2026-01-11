@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from "fastify"
+import type { FastifyRequest, FastifyReply } from "fastify"
 import { auth } from "@/modules/auth/infrastructure/better-auth/better-auth-config"
 
 export async function betterAuthMiddleware(request: FastifyRequest, reply: FastifyReply) {

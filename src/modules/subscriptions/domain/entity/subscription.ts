@@ -6,7 +6,7 @@ export type Currency = "BRL" | "USD";
 
 export class Subscription {
     constructor(
-        public readonly id: string,
+        public readonly id: number,
         public readonly userId: string,
         public name: string,
         public price: Money,

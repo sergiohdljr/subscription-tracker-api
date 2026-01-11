@@ -1,5 +1,5 @@
 export class BillingCycle {
-  private constructor(
+  constructor(
     private readonly value: "WEEKLY" | "MONTHLY" | "YEARLY"
   ) { }
 
@@ -37,3 +37,4 @@ export class BillingCycle {
     return this.value;
   }
 }
+

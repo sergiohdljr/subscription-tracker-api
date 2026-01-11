@@ -1,8 +1,8 @@
 import { pgTable, text, timestamp, decimal, varchar, pgEnum, serial } from 'drizzle-orm/pg-core'
 import { user } from './auth.schema'
 
-export const billingCycle = pgEnum('billing_cycle', ['weekly', 'monthly', 'yearly'] as const)
-export const subscriptionStatus = pgEnum('subscription_status', ['active', 'inactive', 'trial'] as const)
+export const billingCycle = pgEnum('billing_cycle', ['WEEKLY', 'MONTHLY', 'YEARLY'] as const)
+export const subscriptionStatus = pgEnum('subscription_status', ['ACTIVE', 'INACTIVE', 'TRIAL'] as const)
 
 // Application tables
 export const subscriptions = pgTable('subscriptions', {
@@ -18,7 +18,7 @@ export const subscriptions = pgTable('subscriptions', {
   billingCycle: billingCycle('billing_cycle')
     .notNull(),
   status: subscriptionStatus('status')
-    .default('active')
+    .default('ACTIVE')
     .notNull(),
   startDate: timestamp('start_date').notNull(),
   nextBillingDate: timestamp('next_billing_date').notNull(),

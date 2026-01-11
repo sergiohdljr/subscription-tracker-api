@@ -5,6 +5,7 @@ import { BillingCycle } from "@/modules/subscriptions/domain/value-objects/billi
 import { InferSelectModel, InferInsertModel } from "drizzle-orm";
 
 type SubscriptionQuery = InferSelectModel<typeof SubscriptionsQuery>;
+type SubscriptionInsertPersistence = InferInsertModel<typeof SubscriptionsQuery>
 
 export class SubscriptionMapper {
     static toDomain(row: SubscriptionQuery): Subscription {
@@ -24,5 +25,23 @@ export class SubscriptionMapper {
             row.createdAt,
             row.updatedAt
         );
+    }
+
+    static toInsert(subscription: Subscription): SubscriptionInsertPersistence {
+        return {
+            userId: subscription.userId,
+            name: subscription.name,
+            price: subscription.price.amount.toFixed(2),
+            currency: subscription.price.currency,
+            billingCycle: subscription.billingCycle.toString(),
+            status: subscription.status,
+            startDate: subscription.startDate,
+            nextBillingDate: subscription.nextBillingDate,
+            lastBillingDate: subscription.lastBillingDate,
+            renewalNotifiedAt: subscription.renewalNotifiedAt,
+            trialEndsAt: subscription.trialEndsAt,
+            createdAt: subscription.createdAt,
+            updatedAt: subscription.updatedAt
+        };
     }
 }

@@ -1,7 +1,7 @@
 import type { BillingCycle } from "../value-objects/billing-cycle";
 import type { Money } from "../value-objects/money";
 
-export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "TRIAL";
+export type SubscriptionStatus = "ACTIVE" | "INACTIVE" | "TRIAL";
 export type Currency = "BRL" | "USD";
 
 export class Subscription {
@@ -31,7 +31,7 @@ export class Subscription {
     }
 
     public isCanceled() {
-        return this.status === "CANCELED"
+        return this.status === "INACTIVE"
     }
 
     public renew() {

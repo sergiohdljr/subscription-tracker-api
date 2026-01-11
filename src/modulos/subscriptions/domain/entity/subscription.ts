@@ -31,7 +31,7 @@ export class Subscription {
     }
 
     public isCanceled() {
-        return this.status == "CANCELED"
+        return this.status === "CANCELED"
     }
 
     public renew() {

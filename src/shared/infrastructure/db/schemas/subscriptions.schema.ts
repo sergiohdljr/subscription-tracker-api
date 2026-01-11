@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, decimal, varchar, pgEnum, serial } from 'driz
 import { user } from './auth.schema'
 
 export const billingCycle = pgEnum('billing_cycle', ['weekly', 'monthly', 'yearly'] as const)
-export const currentSubscriptionStatus = pgEnum('current_subscription_status', ['active', 'inactive', 'trial'] as const)
+export const subscriptionStatus = pgEnum('subscription_status', ['active', 'inactive', 'trial'] as const)
 
 // Application tables
 export const subscriptions = pgTable('subscriptions', {
@@ -17,7 +17,7 @@ export const subscriptions = pgTable('subscriptions', {
     .notNull(),
   billingCycle: billingCycle('billing_cycle')
     .notNull(),
-  currentSubscriptionStatus: currentSubscriptionStatus('current_subscription_status')
+  status: subscriptionStatus('status')
     .default('active')
     .notNull(),
   startDate: timestamp('start_date').notNull(),

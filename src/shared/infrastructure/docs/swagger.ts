@@ -13,7 +13,7 @@ export async function swaggerPlugin(server: FastifyInstance) {
       },
       servers: [
         {
-          url: 'http://localhost:8080',
+          url: 'http://localhost:8080/',
           description: 'Development server'
         }
       ],
@@ -129,7 +129,7 @@ export async function swaggerPlugin(server: FastifyInstance) {
     routePrefix: '/docs',
     configuration: {
       theme: 'purple',
-      darkMode: true
+      darkMode: false
     }
   })
 }

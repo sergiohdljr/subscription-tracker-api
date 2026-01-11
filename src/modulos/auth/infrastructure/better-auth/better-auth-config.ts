@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "../db";
+import { db } from "../../../../shared/infrastructure/db/connection-pool";
 
 export const auth = betterAuth({
     baseURL: process.env.BASE_URL || "http://localhost:8080",

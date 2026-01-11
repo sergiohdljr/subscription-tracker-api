@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import { auth } from '../lib/auth'
+import { auth } from '../../better-auth/better-auth-config'
 
 async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
   try {

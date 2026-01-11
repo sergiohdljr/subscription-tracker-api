@@ -10,7 +10,6 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",

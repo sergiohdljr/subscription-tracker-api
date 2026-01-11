@@ -1,8 +1,8 @@
 import fastify from 'fastify'
 import { swaggerPlugin } from './shared/infrastructure/docs/swagger'
-import { betterAuthPlugin } from '@/modulos/auth/infrastructure/http/plugins/better-auth-plugin'
+import { betterAuthPlugin } from '@/modules/auth/infrastructure/http/plugins/better-auth-plugin'
 import { betterAuthMiddleware } from './shared/infrastructure/http/middlewares/better-auth-middleware'
-import { authDocsRoutes } from './modulos/auth/infrastructure/http/plugins/auth-docs'
+import { authDocsRoutes } from './modules/auth/infrastructure/http/plugins/auth-docs'
 
 
 async function bootstrap() {

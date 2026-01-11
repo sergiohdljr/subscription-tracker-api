@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify"
-import { auth } from "@/modulos/auth/infrastructure/better-auth/better-auth-config"
+import { auth } from "@/modules/auth/infrastructure/better-auth/better-auth-config"
 
 export async function betterAuthMiddleware(request: FastifyRequest, reply: FastifyReply) {
     if (request.url.startsWith('/api/auth/') ||

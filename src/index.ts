@@ -1,14 +1,9 @@
 import fastify from 'fastify'
-import { swaggerPlugin } from './plugins/swagger'
-import { betterAuthPlugin } from './plugins/better-auth'
-import { betterAuthMiddleware } from './plugins/better-auth-middleware'
-import { authDocsRoutes } from './routes/auth-docs'
-import { subscriptionsRoutes } from './routes/subscriptions.routes'
-import { db } from './db'
-import { SubscriptionDrizzleRepository } from './modules/subscriptions/subscription.repository'
-import { UserDrizzleRepository } from './modules/users/user.repository'
-import { FindAllSubscriptionsUseCase } from './modules/subscriptions/use-cases/find-all-subscriptions'
-import { SubscriptionController } from './modules/subscriptions/subscription.controller'
+import { swaggerPlugin } from './shared/infrastructure/docs/swagger'
+import { betterAuthPlugin } from '@/modules/auth/infrastructure/http/plugins/better-auth-plugin'
+import { betterAuthMiddleware } from './shared/infrastructure/http/middlewares/better-auth-middleware'
+import { authDocsRoutes } from './modules/auth/infrastructure/http/plugins/auth-docs'
+
 
 async function bootstrap() {
   const server = fastify({
@@ -21,26 +16,6 @@ async function bootstrap() {
 
   // Register authentication middleware
   server.addHook('onRequest', betterAuthMiddleware)
-
-  // Initialize repositories
-  const subscriptionRepository = new SubscriptionDrizzleRepository(db)
-  const userRepository = new UserDrizzleRepository(db)
-
-  // Initialize use cases
-  const findAllSubscriptionsUseCase = new FindAllSubscriptionsUseCase(
-    subscriptionRepository,
-    userRepository
-  )
-
-  // Initialize controllers
-  const subscriptionController = new SubscriptionController(
-    findAllSubscriptionsUseCase
-  )
-
-  // Register routes
-  await server.register(async (fastify) => {
-    await subscriptionsRoutes(fastify, subscriptionController)
-  })
 
   server.listen({ port: 8080 }, (err, address) => {
     if (err) {

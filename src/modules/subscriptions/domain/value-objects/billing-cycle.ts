@@ -1,40 +1,33 @@
+export type BillingCycleType = "WEEKLY" | "MONTHLY" | "YEARLY";
+
 export class BillingCycle {
-  constructor(
-    private readonly value: "WEEKLY" | "MONTHLY" | "YEARLY"
-  ) { }
+  private readonly value: BillingCycleType;
 
-  static weekly() {
-    return new BillingCycle("WEEKLY");
+  constructor(value: BillingCycleType) {
+    this.value = value;
   }
 
-  static monthly() {
-    return new BillingCycle("MONTHLY");
-  }
-
-  static yearly() {
-    return new BillingCycle("YEARLY");
-  }
-
-  nextDate(from: Date): Date {
-    const date = new Date(from);
-
-    if (this.value === "WEEKLY") {
-      date.setDate(date.getDate() + 7);
-    }
-
-    if (this.value === "MONTHLY") {
-      date.setMonth(date.getMonth() + 1);
-    }
-
-    if (this.value === "YEARLY") {
-      date.setFullYear(date.getFullYear() + 1);
-    }
-
-    return date;
-  }
-
-  toString() {
+  getValue() {
     return this.value;
   }
-}
 
+  addTo(date: Date): Date {
+    const result = new Date(date);
+
+    switch (this.value) {
+      case "WEEKLY":
+        result.setDate(result.getDate() + 7);
+        break;
+
+      case "MONTHLY":
+        result.setMonth(result.getMonth() + 1);
+        break;
+
+      case "YEARLY":
+        result.setFullYear(result.getFullYear() + 1);
+        break;
+    }
+
+    return result;
+  }
+}

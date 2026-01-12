@@ -38,13 +38,8 @@ export class CreateSubscriptionUseCase {
                 throw new InvalidTrialPeriodError();
         }
 
-        if (input.nextBillingDate < input.startDate) {
-            throw new InvalidBillingDateError()
-        }
-
-
         const subscription = new Subscription(
-            1,
+            1, // placeholder for id
             input.userId,
             input.name,
             price,
@@ -59,6 +54,8 @@ export class CreateSubscriptionUseCase {
             new Date(),
             new Date()
         )
+
+        subscription.initialize()
 
         return await this.subscriptionsRepository.save(subscription)
 

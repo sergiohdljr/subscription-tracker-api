@@ -33,7 +33,7 @@ export class SubscriptionMapper {
             name: subscription.name,
             price: subscription.price.amount.toFixed(2),
             currency: subscription.price.currency,
-            billingCycle: subscription.billingCycle.toString(),
+            billingCycle: subscription.billingCycle.getValue(),
             status: subscription.status,
             startDate: subscription.startDate,
             nextBillingDate: subscription.nextBillingDate,

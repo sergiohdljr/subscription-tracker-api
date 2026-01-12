@@ -3,6 +3,7 @@ import { swaggerPlugin } from './shared/infrastructure/docs/swagger'
 import { betterAuthPlugin } from '@/modules/auth/infrastructure/http/plugins/better-auth-plugin'
 import { betterAuthMiddleware } from './shared/infrastructure/http/middlewares/better-auth-middleware'
 import { authDocsRoutes } from './modules/auth/infrastructure/http/plugins/auth-docs'
+import { subscriptionsRoutes } from './modules/subscriptions/infrastucture/http/routes'
 
 
 async function bootstrap() {
@@ -16,6 +17,9 @@ async function bootstrap() {
 
   // Register authentication middleware
   server.addHook('onRequest', betterAuthMiddleware)
+  server.register(subscriptionsRoutes, {
+    prefix: "/api"
+  })
 
   server.listen({ port: 8080 }, (err, address) => {
     if (err) {

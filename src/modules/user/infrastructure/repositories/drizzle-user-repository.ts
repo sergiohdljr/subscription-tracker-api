@@ -1,8 +1,8 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { User } from "../../domain/entities/User";
 import type { UserRepositoryInterface } from "../../domain/repositories/user-repository";
-import { user } from '@/shared/infrastructure/db/schemas/schema'
-import type * as schema from '@/shared/infrastructure/db/schemas/schema'
+import { user } from '@/shared/infrastructure/db/drizzle/schemas/schema'
+import type * as schema from '@/shared/infrastructure/db/drizzle/schemas/schema'
 import { eq } from "drizzle-orm";
 
 export class drizzleUserRepository implements UserRepositoryInterface {

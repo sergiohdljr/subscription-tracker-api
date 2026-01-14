@@ -3,7 +3,7 @@ import { SubscriptionRepository } from "../../application/repositories/subscript
 import { Subscription } from "../../domain/entity/subscription";
 import type * as schema from "../../../../shared/infrastructure/db/drizzle/schemas/schema"
 import { subscriptions as subscriptionsSchema } from "../../../../shared/infrastructure/db/drizzle/schemas"
-import { and, eq } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { SubscriptionMapper } from "@/shared/infrastructure/db/drizzle/mappers/subscription-mappers";
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
@@ -57,7 +57,23 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
         return SubscriptionMapper.toDomain(row.subscriptionsSchema)
     }
 
-    async findSubscriptionsToNotify(daysBefore: number, today: Date): Promise<Subscription[]> { }
-    async findActiveByUserId(userId: string): Promise<Subscription[]> { }
+    async findSubscriptionsToNotify(daysBefore: number = 7, userId: string): Promise<Subscription[]> {
+
+        const rows = await this.drizzleConnection
+            .select()
+            .from(subscriptionsSchema)
+            .where(
+                and(
+                    eq(subscriptionsSchema.userId, userId),
+                    eq(subscriptionsSchema.status, "ACTIVE"),
+                    eq(
+                        subscriptionsSchema.startDate,
+                        sql`CURRENT_DATE + INTERVAL '${daysBefore} days'`
+                    )
+                ))
+
+        return rows.map(SubscriptionMapper.toDomain)
+
+    }
 
 }

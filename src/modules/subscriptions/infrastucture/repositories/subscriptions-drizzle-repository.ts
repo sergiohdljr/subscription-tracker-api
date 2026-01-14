@@ -31,9 +31,17 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
 
         return SubscriptionMapper.toDomain(query)
     }
+    async findByUserId(userId: string): Promise<Subscription[]> {
+
+        const rows = await this.drizzleConnection.select()
+            .from(subscriptionsSchema)
+            .where(eq(subscriptionsSchema.userId, userId))
+
+        return rows.map(SubscriptionMapper.toDomain)
+
+    }
 
     async findActiveByUserId(userId: string): Promise<Subscription[]> { }
-    async findByUserId(userId: string): Promise<Subscription[]> { }
     async findSubscriptionsToNotify(daysBefore: number, today: Date): Promise<Subscription[]> { }
 
     async update(subscription: Subscription): Promise<void> { }

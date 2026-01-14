@@ -4,6 +4,8 @@ import { CreateSubscriptionUseCase } from "@/modules/subscriptions/application/u
 import { SubscriptionsDrizzleRepository } from "@/modules/subscriptions/infrastucture/repositories/subscriptions-drizzle-repository";
 import { drizzleUserRepository } from "@/modules/user/infrastructure/repositories/drizzle-user-repository";
 import { db } from "@/shared/infrastructure/db/drizzle/connection-pool";
+import { ListSubscriptionsUseCase } from "@/modules/subscriptions/application/use-cases/list-subscriptions";
+import { ListSubscriptionsController } from "../controllers/list-subscriptions-controller";
 
 export async function subscriptionsRoutes(app: FastifyInstance) {
     // Infra
@@ -19,15 +21,30 @@ export async function subscriptionsRoutes(app: FastifyInstance) {
         userRepository
     );
 
+    const listSubscriptionUseCase = new ListSubscriptionsUseCase(
+        subscriptionsRepository,
+        userRepository
+    )
+
     // Controller
     const createSubscriptionController = new CreateSubscriptionController(
         createSubscriptionUseCase
     );
+
+    const listSubscriptionsController = new ListSubscriptionsController(
+        listSubscriptionUseCase
+    )
 
     // Routes
     app.post(
         "/subscriptions",
         async (request, reply) =>
             createSubscriptionController.handle(request, reply)
+    );
+
+    app.get(
+        "/subscriptions",
+        async (request, reply) =>
+            listSubscriptionsController.handle(request, reply)
     );
 }

@@ -16,7 +16,7 @@ export class SubscriptionMapper {
             new Money(Number(row.price), row.currency as Currency),
             row.currency as Currency,
             new BillingCycle(row.billingCycle),
-            row.status as SubscriptionStatus,
+            row.status,
             row.startDate,
             row.nextBillingDate,
             row.lastBillingDate,

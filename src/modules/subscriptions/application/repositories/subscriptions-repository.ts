@@ -6,5 +6,5 @@ export interface SubscriptionRepository {
     findByUserId(userId: string): Promise<Subscription[]>;
     findActiveByUserId(userId: string): Promise<Subscription[]>;
     findSubscriptionsToNotify(daysBefore: number, today: Date): Promise<Subscription[]>;
-    update(subscription: Subscription): Promise<void>;
+    update(subscription: Subscription): Promise<Subscription>;
 }

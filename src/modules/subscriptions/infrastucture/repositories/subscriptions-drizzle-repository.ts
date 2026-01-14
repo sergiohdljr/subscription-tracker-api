@@ -57,11 +57,7 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
         return SubscriptionMapper.toDomain(row.subscriptionsSchema)
     }
 
-    async findSubscriptionsToNotify(today: Date): Promise<Subscription[]> {
-
-    }
-
-
+    async findSubscriptionsToNotify(daysBefore: number, today: Date): Promise<Subscription[]> { }
     async findActiveByUserId(userId: string): Promise<Subscription[]> { }
 
 }

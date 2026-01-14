@@ -5,6 +5,6 @@ export interface SubscriptionRepository {
     findById(id: number, userId: string): Promise<Subscription | null>;
     findByUserId(userId: string): Promise<Subscription[]>;
     findActiveByUserId(userId: string): Promise<Subscription[]>;
-    findSubscriptionsToNotify(daysBefore: number, today: Date): Promise<Subscription[]>;
-    update(subscription: Subscription): Promise<Subscription>;
+    findSubscriptionsToNotify(today: Date): Promise<Subscription[]>;
+    update(subscription: Subscription, userId: string): Promise<Subscription>;
 }

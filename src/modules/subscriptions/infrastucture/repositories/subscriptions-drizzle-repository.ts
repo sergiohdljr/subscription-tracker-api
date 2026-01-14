@@ -41,14 +41,14 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
 
     }
 
-    async update(subscription: Subscription): Promise<Subscription> {
+    async update(subscription: Subscription, userId: string): Promise<Subscription> {
 
         const data = SubscriptionMapper.toInsert(subscription)
 
         const [row] = await this.drizzleConnection
             .update(subscriptionsSchema)
             .set(data)
-            .where(eq(subscriptionsSchema.id, subscription.id))
+            .where(and(eq(subscriptionsSchema.id, subscription.id), eq(subscriptionsSchema.userId, userId)))
             .returning({
                 subscriptionsSchema
             })
@@ -57,7 +57,11 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
         return SubscriptionMapper.toDomain(row.subscriptionsSchema)
     }
 
-    async findSubscriptionsToNotify(daysBefore: number, today: Date): Promise<Subscription[]> { }
+    async findSubscriptionsToNotify(today: Date): Promise<Subscription[]> {
+
+    }
+
+
     async findActiveByUserId(userId: string): Promise<Subscription[]> { }
 
 }

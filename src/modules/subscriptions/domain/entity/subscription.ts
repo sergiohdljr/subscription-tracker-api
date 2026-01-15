@@ -28,9 +28,31 @@ export class Subscription {
             this.nextBillingDate = this.calculateFirstBillingAfterTrial();
         } else {
             this.nextBillingDate = this.billingCycle.addTo(this.startDate);
-            this.status = "ACTIVE";
         }
 
+        this.status = "ACTIVE";
+        this.updatedAt = today;
+    }
+
+    public canActivateFromTrial(today: Date): boolean {
+        if (this.status !== "TRIAL") return false;
+        if (!this.trialEndsAt) return false;
+
+        return this.trialEndsAt <= today;
+    }
+
+    public activateFromTrial(today: Date): void {
+        if (!this.canActivateFromTrial(today)) {
+            throw new Error("Subscription cannot be activated from trial");
+        }
+
+        this.status = "ACTIVE";
+        this.trialEndsAt = null;
+
+        this.nextBillingDate =
+            this.billingCycle.addTo(today);
+
+        this.renewalNotifiedAt = null;
         this.updatedAt = today;
     }
 

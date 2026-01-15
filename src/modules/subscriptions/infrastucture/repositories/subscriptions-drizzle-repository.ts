@@ -3,7 +3,7 @@ import { SubscriptionRepository } from "../../application/repositories/subscript
 import { Subscription } from "../../domain/entity/subscription";
 import type * as schema from "../../../../shared/infrastructure/db/drizzle/schemas/schema"
 import { subscriptions as subscriptionsSchema } from "../../../../shared/infrastructure/db/drizzle/schemas"
-import { and, eq, gte, sql } from "drizzle-orm";
+import { and, eq, gte, lte, or, sql } from "drizzle-orm";
 import { SubscriptionMapper } from "@/shared/infrastructure/db/drizzle/mappers/subscription-mappers";
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
@@ -75,4 +75,43 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
 
     }
 
+    async findDueForRenewal(referenceDate: Date): Promise<Subscription[]> {
+        const rows = await this.drizzleConnection
+            .select()
+            .from(subscriptionsSchema)
+            .where(
+                or(
+                    and(
+                        eq(subscriptionsSchema.status, "ACTIVE"),
+                        lte(subscriptionsSchema.nextBillingDate, referenceDate),
+                    ),
+                    and(
+                        eq(subscriptionsSchema.status, "TRIAL"),
+                        lte(subscriptionsSchema.trialEndsAt, referenceDate),
+                    ),
+                ),
+            );
+
+        return rows.map(SubscriptionMapper.toDomain);
+    }
+
+
+    async saveMany(subscriptions: Subscription[]): Promise<void> {
+        if (subscriptions.length === 0) return;
+
+        await this.drizzleConnection.transaction(async (tx) => {
+            for (const subscription of subscriptions) {
+                const result = await tx
+                    .update(subscriptionsSchema)
+                    .set(SubscriptionMapper.toInsert(subscription))
+                    .where(eq(subscriptionsSchema.id, subscription.id));
+
+                if (result.rowCount === 0) {
+                    throw new Error(
+                        `Failed to update subscription ${subscription.id}`
+                    );
+                }
+            }
+        });
+    }
 }

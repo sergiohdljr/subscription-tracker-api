@@ -57,14 +57,13 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
         return SubscriptionMapper.toDomain(row.subscriptionsSchema)
     }
 
-    async findSubscriptionsToNotify(daysBefore: number = 7, userId: string): Promise<Subscription[]> {
+    async findSubscriptionsToNotify(daysBefore: number = 7): Promise<Subscription[]> {
 
         const rows = await this.drizzleConnection
             .select()
             .from(subscriptionsSchema)
             .where(
                 and(
-                    eq(subscriptionsSchema.userId, userId),
                     eq(subscriptionsSchema.status, "ACTIVE"),
                     eq(
                         subscriptionsSchema.startDate,

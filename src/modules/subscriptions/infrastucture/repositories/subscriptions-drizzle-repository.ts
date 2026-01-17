@@ -96,7 +96,7 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
     }
 
 
-    async saveMany(subscriptions: Subscription[]): Promise<void> {
+    async updateMany(subscriptions: Subscription[]): Promise<void> {
         if (subscriptions.length === 0) return;
 
         await this.drizzleConnection.transaction(async (tx) => {

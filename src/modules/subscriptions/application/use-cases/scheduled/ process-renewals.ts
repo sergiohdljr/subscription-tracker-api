@@ -29,7 +29,7 @@ export class ProcessRenewalsUseCase {
 
         // persistir todas subscriptions com um metodo bulk edit como uma transação
 
-        return await this.subscriptionsRepository.saveMany(updated)
+        return await this.subscriptionsRepository.updateMany(updated)
 
 
     }

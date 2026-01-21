@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import * as dotenv from 'dotenv';
 
 
-class ResendConfig {
+export class ResendConfig {
     constructor(private readonly API_KEY: string) { }
 
     getInstance() {

@@ -7,9 +7,7 @@ import { subscriptionsRoutes } from './modules/subscriptions/infrastucture/http/
 
 
 async function bootstrap() {
-  const server = fastify({
-    logger: true
-  })
+  const server = fastify()
 
   await server.register(swaggerPlugin)
   await server.register(betterAuthPlugin)

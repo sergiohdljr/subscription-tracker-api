@@ -4,7 +4,8 @@ import { auth } from "@/modules/auth/infrastructure/better-auth/better-auth-conf
 export async function betterAuthMiddleware(request: FastifyRequest, reply: FastifyReply) {
     if (request.url.startsWith('/api/auth/') ||
         request.url.startsWith('/docs') ||
-        request.url.startsWith('/documentation')) {
+        request.url.startsWith('/documentation') ||
+        request.url.startsWith('/health')) {
         return
     }
 

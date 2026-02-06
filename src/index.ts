@@ -7,7 +7,9 @@ import { subscriptionsRoutes } from './modules/subscriptions/infrastucture/http/
 
 
 async function bootstrap() {
-  const server = fastify()
+  const server = fastify({
+    logger: true
+  })
 
   await server.register(swaggerPlugin)
   await server.register(betterAuthPlugin)
@@ -19,19 +21,33 @@ async function bootstrap() {
     prefix: "/api"
   })
 
-  const port = Number(process.env.PORT) || 8080
-  const host = process.env.HOST || '0.0.0.0'
-
-  server.listen({ port, host }, (err, address) => {
-    if (err) {
-      console.error(err)
-      process.exit(1)
+  // Health check endpoint for Render
+  server.get('/health', async (request, reply) => {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime()
     }
-    console.log(`Server listening at ${address}`)
   })
+
+  const port = Number(process.env.PORT) || 8080
+  // Sempre usar 0.0.0.0 para aceitar conexões externas no Render
+  const host = '0.0.0.0'
+
+  try {
+    await server.listen({
+      port,
+      host
+    })
+    console.log(`Server listening on http://${host}:${port}`)
+    console.log(`Health check available at http://${host}:${port}/health`)
+  } catch (err) {
+    console.error('Failed to start server:', err)
+    process.exit(1)
+  }
 }
 
 bootstrap().catch((error) => {
-  console.error(error)
+  console.error('Failed to bootstrap application:', error)
   process.exit(1)
 })

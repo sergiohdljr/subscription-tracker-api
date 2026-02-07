@@ -71,6 +71,19 @@ module.exports = {
         },
         {
             ...baseProjectConfig,
+            displayName: 'identity',
+            testMatch: [
+                '<rootDir>/test/modules/identity/**/*.test.ts',
+                '<rootDir>/test/modules/identity/**/*.spec.ts'
+            ],
+            collectCoverageFrom: [
+                '<rootDir>/src/modules/identity/**/*.ts',
+                '!<rootDir>/src/modules/identity/**/*.d.ts'
+            ],
+            coverageDirectory: '<rootDir>/coverage/identity'
+        },
+        {
+            ...baseProjectConfig,
             displayName: 'shared',
             testMatch: [
                 '<rootDir>/test/shared/**/*.test.ts',

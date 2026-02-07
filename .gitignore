@@ -2,3 +2,7 @@ node_modules/
 .env
 dist/
 coverage/
+src/shared/infrastructure/db/drizzle/migrations/
+src/shared/infrastructure/db/drizzle/migrations/meta/
+.cursor/
+.agents/

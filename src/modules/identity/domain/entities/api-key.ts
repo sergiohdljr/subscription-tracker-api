@@ -61,4 +61,20 @@ export class ApiKey {
     getScopes(): Scope[] {
         return [...this.scopes];
     }
+
+    getStatus(): "active" | "revoked" {
+        return this.status;
+    }
+
+    getExpiresAt(): Date | null {
+        return this.expiresAt;
+    }
+
+    getCreatedAt(): Date {
+        return this.createdAt;
+    }
+
+    getLastUsedAt(): Date | null {
+        return this.lastUsedAt;
+    }
 }

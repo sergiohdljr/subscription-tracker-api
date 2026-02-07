@@ -9,7 +9,32 @@ export class InMemoryApiKeyRepository implements ApiKeyRepository {
 
     async save(apiKey: ApiKey, name?: string): Promise<ApiKey> {
         this.apiKeys.set(apiKey.id, apiKey);
-        this.apiKeyScopes.set(apiKey.id, new Set());
+
+        // Sync scopes from entity to the scope maps
+        const entityScopes = apiKey.getScopes();
+        const scopeIds = new Set<string>();
+
+        entityScopes.forEach(scope => {
+            // Find or create a scopeId for this scope
+            let scopeId: string | undefined;
+            for (const [id, existingScope] of this.scopes.entries()) {
+                if (existingScope.equals(scope)) {
+                    scopeId = id;
+                    break;
+                }
+            }
+
+            // If scope doesn't exist, create a new scopeId
+            if (!scopeId) {
+                scopeId = `scope-${scope.value.replace(/:/g, '-')}`;
+                this.scopes.set(scopeId, scope);
+            }
+
+            scopeIds.add(scopeId);
+        });
+
+        this.apiKeyScopes.set(apiKey.id, scopeIds);
+
         return apiKey;
     }
 
@@ -69,6 +94,33 @@ export class InMemoryApiKeyRepository implements ApiKeyRepository {
         }
 
         this.apiKeys.set(apiKey.id, apiKey);
+
+        // Sync scopes from entity to the scope maps
+        const entityScopes = apiKey.getScopes();
+        const scopeIds = this.apiKeyScopes.get(apiKey.id) || new Set();
+
+        // Add new scopes that are in the entity but not in the map
+        entityScopes.forEach(scope => {
+            // Find or create a scopeId for this scope
+            let scopeId: string | undefined;
+            for (const [id, existingScope] of this.scopes.entries()) {
+                if (existingScope.equals(scope)) {
+                    scopeId = id;
+                    break;
+                }
+            }
+
+            // If scope doesn't exist, create a new scopeId
+            if (!scopeId) {
+                scopeId = `scope-${scope.value.replace(/:/g, '-')}`;
+                this.scopes.set(scopeId, scope);
+            }
+
+            scopeIds.add(scopeId);
+        });
+
+        this.apiKeyScopes.set(apiKey.id, scopeIds);
+
         return this.findById(apiKey.id) as Promise<ApiKey>;
     }
 

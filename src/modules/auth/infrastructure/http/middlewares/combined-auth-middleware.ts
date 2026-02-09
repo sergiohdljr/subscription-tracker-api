@@ -2,6 +2,7 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 import { auth } from "@/modules/auth/infrastructure/better-auth/better-auth-config";
 import { createApiKeyGuard } from "../strategies/api-key/api-key.guard";
 import { ApiKeyRepository } from "@/modules/identity/application/repositories/api-key-repository";
+import { UnauthorizedError, InternalServerError } from "@/shared/infrastructure/http/errors";
 
 /**
  * Combined Authentication Middleware
@@ -36,18 +37,17 @@ export function createCombinedAuthMiddleware(apiKeyRepository: ApiKeyRepository)
             });
 
             if (!session) {
-                return reply.status(401).send({
-                    error: 'Unauthorized',
-                    message: 'Authentication required. Provide a valid session or API key.'
-                });
+                throw new UnauthorizedError('Authentication required. Provide a valid session or API key.')
             }
 
             request.user = session.user;
         } catch (error) {
-            return reply.status(500).send({
-                error: 'Internal server error',
-                message: 'Failed to validate authentication'
-            });
+            // Se já for um HttpError, deixar propagar
+            if (error instanceof UnauthorizedError || error instanceof InternalServerError) {
+                throw error
+            }
+            // Erro desconhecido do better-auth
+            throw new InternalServerError('Failed to validate authentication')
         }
     };
 }

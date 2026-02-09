@@ -1,5 +1,8 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { auth } from '../../better-auth/better-auth-config'
+import { createContextLogger } from '@/shared/infrastructure/logging/logger'
+
+const logger = createContextLogger('auth-docs')
 
 async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -73,7 +76,11 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
       reply.send();
     }
   } catch (error) {
-    console.error("Authentication Error:", error);
+    logger.error({ 
+      err: error,
+      url: request.url,
+      method: request.method
+    }, 'Authentication Error')
     reply.status(500).send({
       error: "Internal authentication error",
       code: "AUTH_FAILURE",

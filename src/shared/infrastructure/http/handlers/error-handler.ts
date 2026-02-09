@@ -2,6 +2,9 @@ import { FastifyError, FastifyRequest, FastifyReply, FastifyInstance } from 'fas
 import { HttpError } from '../errors/http-error'
 import { mapDomainErrorToHttp, formatErrorResponse } from '../mappers/error-to-http.mapper'
 import { ErrorResponse } from '../types/error-response'
+import { createContextLogger } from '../../logging/logger'
+
+const logger = createContextLogger('error-handler')
 
 export function setupErrorHandler(server: FastifyInstance) {
     server.setErrorHandler((error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
@@ -43,7 +46,11 @@ export function setupErrorHandler(server: FastifyInstance) {
         }
 
         if (process.env.NODE_ENV !== 'PRODUCTION') {
-            console.error('Unhandled error:', error)
+            logger.error({ 
+                err: error,
+                url: request.url,
+                method: request.method
+            }, 'Unhandled error')
             response.details = {
                 message: (error as Error)?.message ?? 'An unexpected error occurred',
                 stack: (error as Error)?.stack ?? undefined

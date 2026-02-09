@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CreateSubscriptionUseCase } from "@/modules/subscriptions/application/use-cases/create-subscription-usecase";
+import { BadRequestError, UnauthorizedError } from "@/shared/infrastructure/http/errors";
 import z from "zod";
 
 
@@ -21,17 +22,14 @@ export class CreateSubscriptionController {
         const userId = request?.user?.id;
 
         if (!userId) {
-            return reply.status(401).send({
-                message: 'user not found'
-            })
+            throw new UnauthorizedError('User not found')
         }
 
         const parseResult = createSubscriptionSchema.safeParse(request.body);
 
         if (!parseResult.success) {
-            return reply.status(400).send({
-                message: "Invalid request payload",
-                errors: parseResult
+            throw new BadRequestError('Invalid request payload', {
+                errors: parseResult.error?.flatten().fieldErrors ?? []
             });
         }
 
@@ -46,29 +44,22 @@ export class CreateSubscriptionController {
 
         console.log("BILLING_CIRCLE", billingCycle)
 
-        try {
-            const result = await this.createSubscriptionUseCase.run({
-                name,
-                price: price.toString(),
-                userId,
-                billingCycle,
-                startDate,
-                trialEndsAt,
-                currency,
-                status: "ACTIVE",
-                nextBillingDate: new Date(0),
-                lastBillingDate: null,
-                renewalNotifiedAt: null,
-            });
+        const result = await this.createSubscriptionUseCase.run({
+            name,
+            price: price.toString(),
+            userId,
+            billingCycle,
+            startDate,
+            trialEndsAt,
+            currency,
+            status: "ACTIVE",
+            nextBillingDate: new Date(0),
+            lastBillingDate: null,
+            renewalNotifiedAt: null,
+        });
 
-            return reply.status(201).send({
-                id: result.id
-            });
-        } catch (error) {
-            return reply.status(500).send({
-                message: error
-            })
-        }
-
+        return reply.status(201).send({
+            id: result.id
+        });
     }
 }

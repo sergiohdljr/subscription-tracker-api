@@ -4,12 +4,15 @@ import { betterAuthPlugin } from '@/modules/auth/infrastructure/http/plugins/bet
 import { betterAuthMiddleware } from './shared/infrastructure/http/middlewares/better-auth-middleware'
 import { authDocsRoutes } from './modules/auth/infrastructure/http/plugins/auth-docs'
 import { subscriptionsRoutes } from './modules/subscriptions/infrastucture/http/routes'
+import { setupErrorHandler } from './shared/infrastructure/http/handlers/error-handler'
 
 
 async function bootstrap() {
   const server = fastify({
     logger: true
   })
+
+  setupErrorHandler(server)
 
   await server.register(swaggerPlugin)
   await server.register(betterAuthPlugin)

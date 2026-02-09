@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply } from "fastify"
 import { auth } from "@/modules/auth/infrastructure/better-auth/better-auth-config"
+import { UnauthorizedError, InternalServerError } from "../errors"
 
 export async function betterAuthMiddleware(request: FastifyRequest, reply: FastifyReply) {
     if (request.url.startsWith('/api/auth/') ||
@@ -15,14 +16,17 @@ export async function betterAuthMiddleware(request: FastifyRequest, reply: Fasti
         })
 
         if (!session) {
-            return reply.status(401).send({ error: 'Unauthorized' })
+            throw new UnauthorizedError('Authentication required')
         }
 
         request.user = session.user
 
     } catch (error) {
-        reply.status(500).send({
-            error: 'Internal server error'
-        })
+        // Se já for um HttpError, deixar propagar
+        if (error instanceof UnauthorizedError || error instanceof InternalServerError) {
+            throw error
+        }
+        // Erro desconhecido do better-auth
+        throw new InternalServerError('Failed to validate authentication')
     }
 }

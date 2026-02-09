@@ -5,11 +5,26 @@ import { betterAuthMiddleware } from './shared/infrastructure/http/middlewares/b
 import { authDocsRoutes } from './modules/auth/infrastructure/http/plugins/auth-docs'
 import { subscriptionsRoutes } from './modules/subscriptions/infrastucture/http/routes'
 import { setupErrorHandler } from './shared/infrastructure/http/handlers/error-handler'
-
+import { getLogger, createLoggerConfig } from './shared/infrastructure/logging/logger'
 
 async function bootstrap() {
+  const loggerConfig = createLoggerConfig()
+  const logger = getLogger()
+
   const server = fastify({
-    logger: true
+    logger: {
+      level: loggerConfig.level,
+      ...(loggerConfig.pretty && {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'SYS:standard',
+            ignore: 'pid,hostname'
+          }
+        }
+      })
+    }
   })
 
   setupErrorHandler(server)
@@ -34,23 +49,28 @@ async function bootstrap() {
   })
 
   const port = Number(process.env.PORT) || 8080
-  // Sempre usar 0.0.0.0 para aceitar conexões externas no Render
   const host = '0.0.0.0'
+
+  logger.info({ port, host }, 'Starting server')
 
   try {
     await server.listen({
       port,
       host
     })
-    console.log(`Server listening on http://${host}:${port}`)
-    console.log(`Health check available at http://${host}:${port}/health`)
+    logger.info({ 
+      port,
+      host,
+      healthCheck: `http://${host}:${port}/health`
+    }, 'Server started successfully')
   } catch (err) {
-    console.error('Failed to start server:', err)
+    logger.fatal({ err }, 'Failed to start server')
     process.exit(1)
   }
 }
 
 bootstrap().catch((error) => {
-  console.error('Failed to bootstrap application:', error)
+  const logger = getLogger()
+  logger.fatal({ err: error }, 'Failed to bootstrap application')
   process.exit(1)
 })

@@ -4,6 +4,9 @@ import { ApiKeyExpiredError, ApiKeyRevokedError, InsufficientScopeError, ApiKeyN
 import { UserNotFoundError } from '@/modules/user/domain/errors'
 import { InvalidBillingDateError, InvalidTrialPeriodError, InvalidSubscriptionNameError } from '@/modules/subscriptions/domain/errors'
 import { ErrorResponse } from '../types/error-response'
+import { createContextLogger } from '../../logging/logger'
+
+const logger = createContextLogger('error-mapper')
 
 export function mapDomainErrorToHttp(error: Error, request?: FastifyRequest): HttpError {
     // Erros de API Key
@@ -40,14 +43,12 @@ export function mapDomainErrorToHttp(error: Error, request?: FastifyRequest): Ht
         return error
     }
 
-    // Erro desconhecido - logar e retornar erro genérico
-    console.error('Unmapped error:', {
+    logger.warn({
+        err: error,
         name: error.name,
-        message: error.message,
-        stack: error.stack,
         url: request?.url,
         method: request?.method
-    })
+    }, 'Unmapped error detected')
 
     return new InternalServerError('An unexpected error occurred')
 }

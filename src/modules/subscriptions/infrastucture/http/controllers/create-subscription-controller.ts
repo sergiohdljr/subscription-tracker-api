@@ -1,7 +1,10 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CreateSubscriptionUseCase } from "@/modules/subscriptions/application/use-cases/create-subscription-usecase";
 import { BadRequestError, UnauthorizedError } from "@/shared/infrastructure/http/errors";
+import { createContextLogger } from "@/shared/infrastructure/logging/logger";
 import z from "zod";
+
+const logger = createContextLogger('create-subscription-controller')
 
 
 export const createSubscriptionSchema = z.object({
@@ -42,7 +45,7 @@ export class CreateSubscriptionController {
             trialEndsAt
         } = parseResult.data;
 
-        console.log("BILLING_CIRCLE", billingCycle)
+        logger.debug({ billingCycle, userId }, 'Creating subscription')
 
         const result = await this.createSubscriptionUseCase.run({
             name,
@@ -57,6 +60,8 @@ export class CreateSubscriptionController {
             lastBillingDate: null,
             renewalNotifiedAt: null,
         });
+
+        logger.info({ subscriptionId: result.id, userId }, 'Subscription created successfully')
 
         return reply.status(201).send({
             id: result.id

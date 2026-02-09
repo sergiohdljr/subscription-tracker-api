@@ -1,5 +1,8 @@
 import { SubscriptionNotificationService } from "@/modules/subscriptions/application/services/subscription-notification-service";
 import { ResendConfig } from "../../email/resend";
+import { createContextLogger } from "../../logging/logger";
+
+const logger = createContextLogger('resend-subscription-notification')
 
 export class ResendSubscriptionNotificationAdapter
     implements SubscriptionNotificationService {
@@ -129,7 +132,17 @@ export class ResendSubscriptionNotificationAdapter
         })
 
         if (sendEmail.error) {
-            console.error(sendEmail.error)
+            logger.error({ 
+                err: sendEmail.error,
+                userId: data.userId,
+                email: data.email
+            }, 'Failed to send subscription renewal email')
+        } else {
+            logger.info({ 
+                userId: data.userId,
+                email: data.email,
+                subscriptionsCount: data.subscriptionsName.length
+            }, 'Subscription renewal email sent successfully')
         }
     }
 }

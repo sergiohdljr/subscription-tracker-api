@@ -6,7 +6,8 @@ export async function betterAuthMiddleware(request: FastifyRequest, reply: Fasti
     if (request.url.startsWith('/api/auth/') ||
         request.url.startsWith('/docs') ||
         request.url.startsWith('/documentation') ||
-        request.url.startsWith('/health')) {
+        request.url.startsWith('/health') ||
+        request.url.startsWith('/api/subscriptions/process-renewals')) {
         return
     }
 

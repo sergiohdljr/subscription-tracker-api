@@ -10,7 +10,7 @@ export function createLoggerConfig(): LoggerConfig {
     const environment = process.env.NODE_ENV || 'development'
 
     return {
-        level: 'info',
+        level: 'debug',
         pretty: true,
         environment: 'development'
     }

@@ -8,12 +8,11 @@ export interface LoggerConfig {
 
 export function createLoggerConfig(): LoggerConfig {
     const environment = process.env.NODE_ENV || 'development'
-    const logLevel = process.env.LOG_LEVEL || (environment === 'production' ? 'info' : 'debug')
 
     return {
-        level: logLevel,
-        pretty: environment !== 'production',
-        environment
+        level: 'info',
+        pretty: true,
+        environment: 'development'
     }
 }
 

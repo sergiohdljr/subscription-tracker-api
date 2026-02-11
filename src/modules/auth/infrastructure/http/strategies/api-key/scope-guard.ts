@@ -7,7 +7,7 @@ import { InsufficientScopeError } from "@/modules/identity/domain/errors/insuffi
  * Throws InsufficientScopeError if scope is missing
  */
 export function requireScope(requiredScope: string) {
-    return (request: FastifyRequest, reply: FastifyReply) => {
+    return async (request: FastifyRequest, reply: FastifyReply) => {
         if (!request.apiKey) {
             return reply.status(401).send({
                 error: 'Unauthorized',

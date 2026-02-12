@@ -29,6 +29,7 @@ describe('SubscriptionMapper', () => {
         trialEndsAt,
         createdAt,
         updatedAt,
+        // biome-ignore lint/suspicious/noExplicitAny: Test fixture with partial type
       } as any;
 
       const subscription = SubscriptionMapper.toDomain(row);
@@ -72,6 +73,7 @@ describe('SubscriptionMapper', () => {
         trialEndsAt: null,
         createdAt: new Date('2024-01-01T00:00:00.000Z'),
         updatedAt: new Date('2024-01-02T00:00:00.000Z'),
+        // biome-ignore lint/suspicious/noExplicitAny: Test fixture with partial type
       } as any;
 
       const subscription = SubscriptionMapper.toDomain(row);
@@ -101,6 +103,7 @@ describe('SubscriptionMapper', () => {
         new Date('2024-01-02T10:00:00.000Z')
       );
 
+      // biome-ignore lint/suspicious/noExplicitAny: Test assertion with partial type
       const insert = SubscriptionMapper.toInsert(subscription) as any;
 
       expect(insert).toMatchObject({

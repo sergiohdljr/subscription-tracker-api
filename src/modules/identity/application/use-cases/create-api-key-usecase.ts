@@ -2,7 +2,7 @@ import type { ApiKeyRepository } from '../repositories/api-key-repository';
 import { ApiKey } from '../../domain/entities/api-key';
 import { ApiKeyHash } from '../../domain/value-objects/api-key-hash';
 import { Scope } from '../../domain/entities/scope';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 export interface CreateApiKeyInput {
   ownerId: string;
@@ -43,7 +43,9 @@ export class CreateApiKeyUseCase {
       null
     );
 
-    scopes.forEach((scope) => apiKey.addScope(scope));
+    for (const scope of scopes) {
+      apiKey.addScope(scope);
+    }
 
     const savedApiKey = await this.apiKeyRepository.save(apiKey, input.name);
 

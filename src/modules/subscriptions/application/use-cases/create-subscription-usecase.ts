@@ -8,7 +8,6 @@ import { BillingCycle } from '../../domain/value-objects/billing-cycle';
 import { UserNotFoundError } from '../errors/user-not-found-errors';
 import { InvalidSubscriptionNameError } from '../../domain/errors/invalid-subscription-name';
 import { InvalidTrialPeriodError } from '../../domain/errors/invalid-trial-period';
-import { InvalidBillingDateError } from '../../domain/errors/invalid-billing-date';
 
 export class CreateSubscriptionUseCase {
   constructor(

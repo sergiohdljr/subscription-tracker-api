@@ -3,7 +3,7 @@ import type { SubscriptionRepository } from '../../application/repositories/subs
 import type { Subscription } from '../../domain/entity/subscription';
 import type * as schema from '../../../../shared/infrastructure/db/drizzle/schemas/schema';
 import { subscriptions as subscriptionsSchema } from '../../../../shared/infrastructure/db/drizzle/schemas';
-import { and, eq, gte, lte, or, sql } from 'drizzle-orm';
+import { and, eq, lte, or, sql } from 'drizzle-orm';
 import { SubscriptionMapper } from '@/shared/infrastructure/db/drizzle/mappers/subscription-mappers';
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {

@@ -1,7 +1,6 @@
 import { InMemoryApiKeyRepository } from '@/modules/identity/infrastructure/repositories/in-memory-api-key-repository';
 import { ApiKey } from '@/modules/identity/domain/entities/api-key';
 import { Scope } from '@/modules/identity/domain/entities/scope';
-import { ApiKeyHash } from '@/modules/identity/domain/value-objects/api-key-hash';
 
 function makeApiKey(params: {
   id?: string;

@@ -25,7 +25,9 @@ function makeApiKey(params: {
   );
 
   if (params.scopes) {
-    params.scopes.forEach((scope) => apiKey.addScope(scope));
+    for (const scope of params.scopes) {
+      apiKey.addScope(scope);
+    }
   }
 
   return apiKey;

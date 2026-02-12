@@ -6,6 +6,7 @@ import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 type ApiKeyQuery = InferSelectModel<typeof ApiKeysSchema>;
 type ApiKeyInsertPersistence = InferInsertModel<typeof ApiKeysSchema>;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: Mapper utility class with static methods
 export class ApiKeyMapper {
   static toDomain(row: ApiKeyQuery, scopes: Scope[] = []): ApiKey {
     const apiKey = new ApiKey(
@@ -19,7 +20,9 @@ export class ApiKeyMapper {
     );
 
     // Add scopes to the API key
-    scopes.forEach((scope) => apiKey.addScope(scope));
+    for (const scope of scopes) {
+      apiKey.addScope(scope);
+    }
 
     return apiKey;
   }

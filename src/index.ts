@@ -40,7 +40,7 @@ async function bootstrap() {
   });
 
   // Health check endpoint for Render
-  server.get('/health', async (request, reply) => {
+  server.get('/health', async () => {
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),

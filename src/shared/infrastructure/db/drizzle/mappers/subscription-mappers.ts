@@ -1,7 +1,6 @@
 import {
   type Currency,
   Subscription,
-  SubscriptionStatus,
 } from '@/modules/subscriptions/domain/entity/subscription';
 import type { subscriptions as SubscriptionsQuery } from '../schemas';
 import { Money } from '@/modules/subscriptions/domain/value-objects/money';
@@ -11,6 +10,7 @@ import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 type SubscriptionQuery = InferSelectModel<typeof SubscriptionsQuery>;
 type SubscriptionInsertPersistence = InferInsertModel<typeof SubscriptionsQuery>;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: Mapper utility class with static methods
 export class SubscriptionMapper {
   static toDomain(row: SubscriptionQuery): Subscription {
     return new Subscription(

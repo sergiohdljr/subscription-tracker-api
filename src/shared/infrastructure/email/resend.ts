@@ -10,4 +10,4 @@ export class ResendConfig {
 }
 
 dotenv.config();
-export const resendConfig = new ResendConfig(process.env.RESEND_API_KEY!);
+export const resendConfig = new ResendConfig(process.env.RESEND_API_KEY ?? '');

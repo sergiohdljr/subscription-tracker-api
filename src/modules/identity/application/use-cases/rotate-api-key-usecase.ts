@@ -1,10 +1,9 @@
 import type { ApiKeyRepository } from '../repositories/api-key-repository';
 import { ApiKey } from '../../domain/entities/api-key';
 import { ApiKeyHash } from '../../domain/value-objects/api-key-hash';
-import { Scope } from '../../domain/entities/scope';
 import { ApiKeyNotFoundError } from '../../domain/errors/api-key-not-found.error';
 import { ApiKeyRevokedError } from '../../domain/errors/api-key-revoked.error';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 export interface RotateApiKeyInput {
   apiKeyId: string;
@@ -60,7 +59,9 @@ export class RotateApiKeyUseCase {
     );
 
     // Add scopes to new key
-    scopes.forEach((scope) => newApiKey.addScope(scope));
+    for (const scope of scopes) {
+      newApiKey.addScope(scope);
+    }
 
     // Save new key
     const savedApiKey = await this.apiKeyRepository.save(

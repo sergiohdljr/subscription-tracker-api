@@ -13,15 +13,17 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
 
     // Convert Fastify headers to standard Headers object
     const headers = new Headers();
-    Object.entries(request.headers).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(request.headers)) {
       if (value) {
         if (Array.isArray(value)) {
-          value.forEach((v) => headers.append(key, v));
+          for (const v of value) {
+            headers.append(key, v);
+          }
         } else {
           headers.append(key, value.toString());
         }
       }
-    });
+    }
 
     // Get request body
     let body: string | undefined;
@@ -51,7 +53,7 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
     const response = await auth.handler(req);
 
     // Get response body
-    let responseBody: any = null;
+    let responseBody: unknown = null;
     const contentType = response.headers.get('content-type');
 
     if (response.body) {

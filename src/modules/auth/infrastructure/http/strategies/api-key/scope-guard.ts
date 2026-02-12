@@ -45,7 +45,7 @@ export function requireAnyScope(...requiredScopes: string[]) {
     const hasAnyScope = requiredScopes.some((scopeValue) => {
       try {
         const scope = new Scope(scopeValue);
-        return request.apiKey!.apiKey.hasScope(scope);
+        return request.apiKey?.apiKey.hasScope(scope) ?? false;
       } catch {
         return false;
       }
@@ -77,7 +77,7 @@ export function requireAllScopes(...requiredScopes: string[]) {
     requiredScopes.forEach((scopeValue) => {
       try {
         const scope = new Scope(scopeValue);
-        if (!request.apiKey!.apiKey.hasScope(scope)) {
+        if (!request.apiKey?.apiKey.hasScope(scope)) {
           missingScopes.push(scopeValue);
         }
       } catch {

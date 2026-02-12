@@ -7,7 +7,7 @@ const logger = createContextLogger('process-renewals-controller');
 export class ProcessRenewalsController {
   constructor(private readonly processRenewalsUseCase: ProcessRenewalsUseCase) {}
 
-  async handle(request: FastifyRequest, reply: FastifyReply) {
+  async handle(_request: FastifyRequest, reply: FastifyReply) {
     const today = new Date();
 
     logger.info({ date: today.toISOString() }, 'Processing renewals');

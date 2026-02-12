@@ -1,7 +1,5 @@
 import { CreateApiKeyUseCase } from '@/modules/identity/application/use-cases/create-api-key-usecase';
 import { InMemoryApiKeyRepository } from '@/modules/identity/infrastructure/repositories/in-memory-api-key-repository';
-import { ApiKey } from '@/modules/identity/domain/entities/api-key';
-import { Scope } from '@/modules/identity/domain/entities/scope';
 
 describe('CreateApiKeyUseCase', () => {
   let useCase: CreateApiKeyUseCase;

@@ -2,7 +2,7 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 import { auth } from '@/modules/auth/infrastructure/better-auth/better-auth-config';
 import { UnauthorizedError, InternalServerError } from '../errors';
 
-export async function betterAuthMiddleware(request: FastifyRequest, reply: FastifyReply) {
+export async function betterAuthMiddleware(request: FastifyRequest, _reply: FastifyReply) {
   if (
     request.url.startsWith('/api/auth/') ||
     request.url.startsWith('/docs') ||

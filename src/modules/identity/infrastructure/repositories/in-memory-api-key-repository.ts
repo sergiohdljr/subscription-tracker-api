@@ -7,7 +7,7 @@ export class InMemoryApiKeyRepository implements ApiKeyRepository {
   private apiKeyScopes: Map<string, Set<string>> = new Map(); // apiKeyId -> Set<scopeId>
   private scopes: Map<string, Scope> = new Map(); // scopeId -> Scope
 
-  async save(apiKey: ApiKey, name?: string): Promise<ApiKey> {
+  async save(apiKey: ApiKey, _name?: string): Promise<ApiKey> {
     this.apiKeys.set(apiKey.id, apiKey);
 
     // Sync scopes from entity to the scope maps
@@ -61,7 +61,9 @@ export class InMemoryApiKeyRepository implements ApiKeyRepository {
       apiKey.getLastUsedAt()
     );
 
-    scopes.forEach((scope) => apiKeyWithScopes.addScope(scope));
+    for (const scope of scopes) {
+      apiKeyWithScopes.addScope(scope);
+    }
 
     return apiKeyWithScopes;
   }

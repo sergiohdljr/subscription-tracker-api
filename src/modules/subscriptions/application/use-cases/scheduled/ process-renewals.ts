@@ -1,6 +1,6 @@
 import type { Subscription } from '@/modules/subscriptions/domain/entity/subscription';
 import type { SubscriptionRepository } from '../../repositories/subscriptions-repository';
-import { getLogger, Logger } from '@/shared/infrastructure/logging/logger';
+import { getLogger } from '@/shared/infrastructure/logging/logger';
 
 const logger = getLogger();
 

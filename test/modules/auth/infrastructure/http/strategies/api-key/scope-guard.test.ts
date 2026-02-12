@@ -10,7 +10,9 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 function makeApiKey(scopes: Scope[] = []): ApiKey {
   const apiKey = new ApiKey('key-1', 'hash-123', 'user-1', 'active', null, new Date(), null);
 
-  scopes.forEach((scope) => apiKey.addScope(scope));
+  for (const scope of scopes) {
+    apiKey.addScope(scope);
+  }
 
   return apiKey;
 }

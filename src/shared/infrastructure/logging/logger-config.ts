@@ -7,12 +7,10 @@ export interface LoggerConfig {
 }
 
 export function createLoggerConfig(): LoggerConfig {
-  const environment = process.env.NODE_ENV || 'development';
-
   return {
     level: 'debug',
     pretty: true,
-    environment: 'development',
+    environment: process.env.NODE_ENV || 'development',
   };
 }
 

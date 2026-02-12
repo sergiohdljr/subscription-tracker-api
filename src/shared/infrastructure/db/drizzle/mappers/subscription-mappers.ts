@@ -1,7 +1,4 @@
-import {
-  type Currency,
-  Subscription,
-} from '@/modules/subscriptions/domain/entity/subscription';
+import { type Currency, Subscription } from '@/modules/subscriptions/domain/entity/subscription';
 import type { subscriptions as SubscriptionsQuery } from '../schemas';
 import { Money } from '@/modules/subscriptions/domain/value-objects/money';
 import { BillingCycle } from '@/modules/subscriptions/domain/value-objects/billing-cycle';

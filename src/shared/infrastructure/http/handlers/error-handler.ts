@@ -15,7 +15,10 @@ export function setupErrorHandler(server: FastifyInstance) {
         code: 'VALIDATION_ERROR',
         details: {
           errors: error.validation.map((err) => ({
-            field: err.instancePath || (err.params as { missingProperty?: string })?.missingProperty || 'unknown',
+            field:
+              err.instancePath ||
+              (err.params as { missingProperty?: string })?.missingProperty ||
+              'unknown',
             message: err.message || 'Invalid value',
           })),
         },

@@ -1,0 +1,47 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+  release:
+    types: [published, created]
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  lint-and-test:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Check code format
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: false
+
+      - name: Run build
+        run: npm run build
+        continue-on-error: false
+
+

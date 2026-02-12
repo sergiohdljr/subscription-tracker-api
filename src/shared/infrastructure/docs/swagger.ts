@@ -1,6 +1,6 @@
-import type { FastifyInstance } from 'fastify'
-import fastifySwagger from '@fastify/swagger'
-import fastifyScalar from '@scalar/fastify-api-reference'
+import type { FastifyInstance } from 'fastify';
+import fastifySwagger from '@fastify/swagger';
+import fastifyScalar from '@scalar/fastify-api-reference';
 
 export async function swaggerPlugin(server: FastifyInstance) {
   // Register Swagger plugin
@@ -9,34 +9,34 @@ export async function swaggerPlugin(server: FastifyInstance) {
       info: {
         title: 'Subscription Tracker API',
         description: 'API for managing subscriptions with Better Auth authentication',
-        version: '1.0.0'
+        version: '1.0.0',
       },
       servers: [
         {
           url: 'http://localhost:8080/',
-          description: 'Development server'
-        }
+          description: 'Development server',
+        },
       ],
       components: {
         securitySchemes: {
           cookieAuth: {
             type: 'apiKey',
             in: 'cookie',
-            name: 'better-auth.session_token'
-          }
-        }
+            name: 'better-auth.session_token',
+          },
+        },
       },
       tags: [
         { name: 'Health', description: 'Health check endpoints' },
-        { name: 'Authentication', description: 'Better Auth endpoints' }
-      ]
-    }
-  })
+        { name: 'Authentication', description: 'Better Auth endpoints' },
+      ],
+    },
+  });
 
   server.addHook('onReady', async () => {
-    const spec = server.swagger()
+    const spec = server.swagger();
 
-    if (!spec.paths) spec.paths = {}
+    if (!spec.paths) spec.paths = {};
 
     spec.paths['/api/auth/sign-up/email'] = {
       post: {
@@ -53,19 +53,19 @@ export async function swaggerPlugin(server: FastifyInstance) {
                 properties: {
                   email: { type: 'string', format: 'email' },
                   password: { type: 'string', minLength: 8 },
-                  name: { type: 'string' }
-                }
-              }
-            }
-          }
+                  name: { type: 'string' },
+                },
+              },
+            },
+          },
         },
         responses: {
           '200': {
-            description: 'User created successfully'
-          }
-        }
-      }
-    }
+            description: 'User created successfully',
+          },
+        },
+      },
+    };
 
     spec.paths['/api/auth/sign-in/email'] = {
       post: {
@@ -81,19 +81,19 @@ export async function swaggerPlugin(server: FastifyInstance) {
                 required: ['email', 'password'],
                 properties: {
                   email: { type: 'string', format: 'email' },
-                  password: { type: 'string' }
-                }
-              }
-            }
-          }
+                  password: { type: 'string' },
+                },
+              },
+            },
+          },
         },
         responses: {
           '200': {
-            description: 'Signed in successfully'
-          }
-        }
-      }
-    }
+            description: 'Signed in successfully',
+          },
+        },
+      },
+    };
 
     spec.paths['/api/auth/get-session'] = {
       get: {
@@ -103,11 +103,11 @@ export async function swaggerPlugin(server: FastifyInstance) {
         security: [{ cookieAuth: [] }],
         responses: {
           '200': {
-            description: 'Session retrieved successfully'
-          }
-        }
-      }
-    }
+            description: 'Session retrieved successfully',
+          },
+        },
+      },
+    };
 
     spec.paths['/api/auth/sign-out'] = {
       post: {
@@ -117,19 +117,19 @@ export async function swaggerPlugin(server: FastifyInstance) {
         security: [{ cookieAuth: [] }],
         responses: {
           '200': {
-            description: 'Signed out successfully'
-          }
-        }
-      }
-    }
-  })
+            description: 'Signed out successfully',
+          },
+        },
+      },
+    };
+  });
 
   // Register Scalar UI
   await server.register(fastifyScalar, {
     routePrefix: '/docs',
     configuration: {
       theme: 'purple',
-      darkMode: false
-    }
-  })
+      darkMode: false,
+    },
+  });
 }

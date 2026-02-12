@@ -1,142 +1,123 @@
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { ApiKeyRepository } from "../../application/repositories/api-key-repository";
-import { ApiKey } from "../../domain/entities/api-key";
-import { Scope } from "../../domain/entities/scope";
-import type * as schema from "@/shared/infrastructure/db/drizzle/schemas/schema";
-import { apiKeys, apiScopes, apiKeyScopes } from "@/shared/infrastructure/db/drizzle/schemas";
-import { eq, and } from "drizzle-orm";
-import { ApiKeyMapper } from "@/shared/infrastructure/db/drizzle/mappers/api-key-mappers";
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type { ApiKeyRepository } from '../../application/repositories/api-key-repository';
+import type { ApiKey } from '../../domain/entities/api-key';
+import { Scope } from '../../domain/entities/scope';
+import type * as schema from '@/shared/infrastructure/db/drizzle/schemas/schema';
+import { apiKeys, apiScopes, apiKeyScopes } from '@/shared/infrastructure/db/drizzle/schemas';
+import { eq, and } from 'drizzle-orm';
+import { ApiKeyMapper } from '@/shared/infrastructure/db/drizzle/mappers/api-key-mappers';
 
 export class ApiKeyDrizzleRepository implements ApiKeyRepository {
-    constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) { }
+  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) {}
 
-    async save(apiKey: ApiKey, name?: string): Promise<ApiKey> {
-        const data = ApiKeyMapper.toInsert(apiKey, name);
+  async save(apiKey: ApiKey, name?: string): Promise<ApiKey> {
+    const data = ApiKeyMapper.toInsert(apiKey, name);
 
-        const [returningData] = await this.drizzleConnection
-            .insert(apiKeys)
-            .values(data)
-            .returning();
+    const [returningData] = await this.drizzleConnection.insert(apiKeys).values(data).returning();
 
-        // Load scopes if any
-        const scopes = await this.findScopesByApiKeyId(returningData.id);
+    // Load scopes if any
+    const scopes = await this.findScopesByApiKeyId(returningData.id);
 
-        return ApiKeyMapper.toDomain(returningData, scopes);
+    return ApiKeyMapper.toDomain(returningData, scopes);
+  }
+
+  async findById(id: string): Promise<ApiKey | null> {
+    const [row] = await this.drizzleConnection.select().from(apiKeys).where(eq(apiKeys.id, id));
+
+    if (!row) {
+      return null;
     }
 
-    async findById(id: string): Promise<ApiKey | null> {
-        const [row] = await this.drizzleConnection
-            .select()
-            .from(apiKeys)
-            .where(eq(apiKeys.id, id));
+    const scopes = await this.findScopesByApiKeyId(id);
+    return ApiKeyMapper.toDomain(row, scopes);
+  }
 
-        if (!row) {
-            return null;
-        }
+  async findByHash(hash: string): Promise<ApiKey | null> {
+    const [row] = await this.drizzleConnection
+      .select()
+      .from(apiKeys)
+      .where(eq(apiKeys.keyHash, hash));
 
-        const scopes = await this.findScopesByApiKeyId(id);
-        return ApiKeyMapper.toDomain(row, scopes);
+    if (!row) {
+      return null;
     }
 
-    async findByHash(hash: string): Promise<ApiKey | null> {
-        const [row] = await this.drizzleConnection
-            .select()
-            .from(apiKeys)
-            .where(eq(apiKeys.keyHash, hash));
+    const scopes = await this.findScopesByApiKeyId(row.id);
+    return ApiKeyMapper.toDomain(row, scopes);
+  }
 
-        if (!row) {
-            return null;
-        }
+  async findByOwnerId(ownerId: string): Promise<ApiKey[]> {
+    const rows = await this.drizzleConnection
+      .select()
+      .from(apiKeys)
+      .where(eq(apiKeys.ownerId, ownerId));
 
-        const scopes = await this.findScopesByApiKeyId(row.id);
-        return ApiKeyMapper.toDomain(row, scopes);
+    const apiKeysList: ApiKey[] = [];
+
+    for (const row of rows) {
+      const scopes = await this.findScopesByApiKeyId(row.id);
+      apiKeysList.push(ApiKeyMapper.toDomain(row, scopes));
     }
 
-    async findByOwnerId(ownerId: string): Promise<ApiKey[]> {
-        const rows = await this.drizzleConnection
-            .select()
-            .from(apiKeys)
-            .where(eq(apiKeys.ownerId, ownerId));
+    return apiKeysList;
+  }
 
-        const apiKeysList: ApiKey[] = [];
+  async update(apiKey: ApiKey): Promise<ApiKey> {
+    const data = ApiKeyMapper.toUpdate(apiKey);
 
-        for (const row of rows) {
-            const scopes = await this.findScopesByApiKeyId(row.id);
-            apiKeysList.push(ApiKeyMapper.toDomain(row, scopes));
-        }
+    const [updatedRow] = await this.drizzleConnection
+      .update(apiKeys)
+      .set(data)
+      .where(eq(apiKeys.id, apiKey.id))
+      .returning();
 
-        return apiKeysList;
+    if (!updatedRow) {
+      throw new Error(`Failed to update API key ${apiKey.id}`);
     }
 
-    async update(apiKey: ApiKey): Promise<ApiKey> {
-        const data = ApiKeyMapper.toUpdate(apiKey);
+    const scopes = await this.findScopesByApiKeyId(apiKey.id);
+    return ApiKeyMapper.toDomain(updatedRow, scopes);
+  }
 
-        const [updatedRow] = await this.drizzleConnection
-            .update(apiKeys)
-            .set(data)
-            .where(eq(apiKeys.id, apiKey.id))
-            .returning();
+  async revoke(id: string): Promise<void> {
+    await this.drizzleConnection
+      .update(apiKeys)
+      .set({ status: 'revoked' })
+      .where(eq(apiKeys.id, id));
+  }
 
-        if (!updatedRow) {
-            throw new Error(`Failed to update API key ${apiKey.id}`);
-        }
+  async findScopesByApiKeyId(apiKeyId: string): Promise<Scope[]> {
+    const rows = await this.drizzleConnection
+      .select({
+        scopeName: apiScopes.name,
+      })
+      .from(apiKeyScopes)
+      .innerJoin(apiScopes, eq(apiKeyScopes.scopeId, apiScopes.id))
+      .where(eq(apiKeyScopes.apiKeyId, apiKeyId));
 
-        const scopes = await this.findScopesByApiKeyId(apiKey.id);
-        return ApiKeyMapper.toDomain(updatedRow, scopes);
+    return rows.map((row) => new Scope(row.scopeName));
+  }
+
+  async addScopeToApiKey(apiKeyId: string, scopeId: string): Promise<void> {
+    // Check if scope already exists
+    const [existing] = await this.drizzleConnection
+      .select()
+      .from(apiKeyScopes)
+      .where(and(eq(apiKeyScopes.apiKeyId, apiKeyId), eq(apiKeyScopes.scopeId, scopeId)));
+
+    if (existing) {
+      return; // Already exists
     }
 
-    async revoke(id: string): Promise<void> {
-        await this.drizzleConnection
-            .update(apiKeys)
-            .set({ status: 'revoked' })
-            .where(eq(apiKeys.id, id));
-    }
+    await this.drizzleConnection.insert(apiKeyScopes).values({
+      apiKeyId,
+      scopeId,
+    });
+  }
 
-    async findScopesByApiKeyId(apiKeyId: string): Promise<Scope[]> {
-        const rows = await this.drizzleConnection
-            .select({
-                scopeName: apiScopes.name,
-            })
-            .from(apiKeyScopes)
-            .innerJoin(apiScopes, eq(apiKeyScopes.scopeId, apiScopes.id))
-            .where(eq(apiKeyScopes.apiKeyId, apiKeyId));
-
-        return rows.map(row => new Scope(row.scopeName));
-    }
-
-    async addScopeToApiKey(apiKeyId: string, scopeId: string): Promise<void> {
-        // Check if scope already exists
-        const [existing] = await this.drizzleConnection
-            .select()
-            .from(apiKeyScopes)
-            .where(
-                and(
-                    eq(apiKeyScopes.apiKeyId, apiKeyId),
-                    eq(apiKeyScopes.scopeId, scopeId)
-                )
-            );
-
-        if (existing) {
-            return; // Already exists
-        }
-
-        await this.drizzleConnection
-            .insert(apiKeyScopes)
-            .values({
-                apiKeyId,
-                scopeId,
-            });
-    }
-
-    async removeScopeFromApiKey(apiKeyId: string, scopeId: string): Promise<void> {
-        await this.drizzleConnection
-            .delete(apiKeyScopes)
-            .where(
-                and(
-                    eq(apiKeyScopes.apiKeyId, apiKeyId),
-                    eq(apiKeyScopes.scopeId, scopeId)
-                )
-            );
-    }
+  async removeScopeFromApiKey(apiKeyId: string, scopeId: string): Promise<void> {
+    await this.drizzleConnection
+      .delete(apiKeyScopes)
+      .where(and(eq(apiKeyScopes.apiKeyId, apiKeyId), eq(apiKeyScopes.scopeId, scopeId)));
+  }
 }
-

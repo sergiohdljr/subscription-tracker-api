@@ -1,2 +1,1 @@
-export { UserNotFoundError } from './user-not-found'
-
+export { UserNotFoundError } from './user-not-found';

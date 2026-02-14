@@ -1,4 +1,4 @@
-export type BillingCycleType = "WEEKLY" | "MONTHLY" | "YEARLY";
+export type BillingCycleType = 'WEEKLY' | 'MONTHLY' | 'YEARLY';
 
 export class BillingCycle {
   private readonly value: BillingCycleType;
@@ -15,15 +15,15 @@ export class BillingCycle {
     const result = new Date(date);
 
     switch (this.value) {
-      case "WEEKLY":
+      case 'WEEKLY':
         result.setDate(result.getDate() + 7);
         break;
 
-      case "MONTHLY":
+      case 'MONTHLY':
         result.setMonth(result.getMonth() + 1);
         break;
 
-      case "YEARLY":
+      case 'YEARLY':
         result.setFullYear(result.getFullYear() + 1);
         break;
     }

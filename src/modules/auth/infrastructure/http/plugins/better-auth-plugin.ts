@@ -1,8 +1,8 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import { auth } from '../../better-auth/better-auth-config'
-import { createContextLogger } from '@/shared/infrastructure/logging/logger'
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { auth } from '../../better-auth/better-auth-config';
+import { createContextLogger } from '@/shared/infrastructure/logging/logger';
 
-const logger = createContextLogger('better-auth-plugin')
+const logger = createContextLogger('better-auth-plugin');
 
 async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -13,18 +13,20 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
 
     // Convert Fastify headers to standard Headers object
     const headers = new Headers();
-    Object.entries(request.headers).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(request.headers)) {
       if (value) {
         if (Array.isArray(value)) {
-          value.forEach(v => headers.append(key, v));
+          for (const v of value) {
+            headers.append(key, v);
+          }
         } else {
           headers.append(key, value.toString());
         }
       }
-    });
+    }
 
     // Get request body
-    let body: string | undefined ;
+    let body: string | undefined;
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       if (request.body) {
         // If body is already a string, use it; otherwise stringify
@@ -51,7 +53,7 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
     const response = await auth.handler(req);
 
     // Get response body
-    let responseBody: any = null;
+    let responseBody: unknown = null;
     const contentType = response.headers.get('content-type');
 
     if (response.body) {
@@ -81,15 +83,18 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
       reply.send();
     }
   } catch (error) {
-    logger.error({ 
-      err: error,
-      url: request.url,
-      method: request.method
-    }, 'Authentication Error')
+    logger.error(
+      {
+        err: error,
+        url: request.url,
+        method: request.method,
+      },
+      'Authentication Error'
+    );
     reply.status(500).send({
-      error: "Internal authentication error",
-      code: "AUTH_FAILURE",
-      message: error instanceof Error ? error.message : String(error)
+      error: 'Internal authentication error',
+      code: 'AUTH_FAILURE',
+      message: error instanceof Error ? error.message : String(error),
     });
   }
 }
@@ -97,8 +102,11 @@ async function betterAuthHandler(request: FastifyRequest, reply: FastifyReply) {
 export async function betterAuthPlugin(server: FastifyInstance) {
   // Register better-auth handler for all routes under /api/auth
   // Using a plugin with prefix to handle all sub-routes
-  await server.register(async (fastify) => {
-    // Catch-all route for any path under /api/auth
-    fastify.all('/*', betterAuthHandler);
-  }, { prefix: '/api/auth' });
+  await server.register(
+    async (fastify) => {
+      // Catch-all route for any path under /api/auth
+      fastify.all('/*', betterAuthHandler);
+    },
+    { prefix: '/api/auth' }
+  );
 }

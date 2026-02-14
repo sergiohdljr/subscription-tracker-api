@@ -1,5 +1,5 @@
-import { createAuthClient } from "better-auth/client";
+import { createAuthClient } from 'better-auth/client';
 
 export const authClient = createAuthClient({
-    baseURL: process.env.BASE_URL || "http://localhost:8080"
+  baseURL: process.env.BASE_URL || 'http://localhost:8080',
 });

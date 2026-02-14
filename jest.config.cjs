@@ -1,19 +1,32 @@
 /** @type {import('jest').Config} */
 const baseProjectConfig = {
   testEnvironment: 'node',
+  // Use @swc/jest for faster compilation (much faster than ts-jest)
   transform: {
     '^.+\\.ts$': [
-      'ts-jest',
+      '@swc/jest',
       {
-        tsconfig: '<rootDir>/tsconfig.json',
-        diagnostics: {
-          // ts-jest warning for NodeNext/Node16 hybrid module mode
-          // https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
-          ignoreCodes: [151002],
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            decorators: false,
+            dynamicImport: true,
+          },
+          target: 'es2022',
+        },
+        module: {
+          type: 'commonjs',
         },
       },
     ],
   },
+  // Cache configuration for faster subsequent runs
+  cache: true,
+  cacheDirectory: '<rootDir>/.jest-cache',
+  // Auto-clear mocks between tests
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
   moduleFileExtensions: ['ts', 'js', 'json'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -23,9 +36,13 @@ const baseProjectConfig = {
 };
 
 module.exports = {
-  coverageReporters: ['text', 'lcov'],
   // Tests live at the repository root following Clean Architecture conventions:
   // test/modules/<module>/** and test/shared/**
+  // Performance optimizations
+  maxWorkers: '50%',
+  // Timeout for tests (5s should be enough for unit tests)
+  testTimeout: 5000,
+  coverageReporters: ['text', 'lcov'],
   projects: [
     {
       ...baseProjectConfig,

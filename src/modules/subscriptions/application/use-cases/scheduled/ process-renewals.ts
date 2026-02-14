@@ -2,16 +2,14 @@ import type { Subscription } from '@/modules/subscriptions/domain/entity/subscri
 import type { SubscriptionRepository } from '../../repositories/subscriptions-repository';
 
 export class ProcessRenewalsUseCase {
-  constructor(private readonly subscriptionsRepository: SubscriptionRepository) { }
+  constructor(private readonly subscriptionsRepository: SubscriptionRepository) {}
 
   async run(today: Date = new Date()) {
-
     const updated: Subscription[] = [];
 
     const subscriptionsToRenew = await this.subscriptionsRepository.findDueForRenewal(today);
 
     for (const subscription of subscriptionsToRenew) {
-
       if (subscription.isTrial()) {
         if (subscription.canActivateFromTrial(today)) {
           subscription.activateFromTrial(today);

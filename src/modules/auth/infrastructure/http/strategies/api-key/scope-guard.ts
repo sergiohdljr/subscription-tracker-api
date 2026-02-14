@@ -1,6 +1,9 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { Scope } from '@/modules/identity/domain/entities/scope';
 import { InsufficientScopeError } from '@/modules/identity/domain/errors/insufficient-scope.error';
+import { createContextLogger } from '@/shared/infrastructure/logging/logger';
+
+const logger = createContextLogger('scope-guard');
 
 /**
  * Checks if the authenticated API key has the required scope
@@ -9,6 +12,10 @@ import { InsufficientScopeError } from '@/modules/identity/domain/errors/insuffi
 export function requireScope(requiredScope: string) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     if (!request.apiKey) {
+      logger.warn(
+        { path: request.url, method: request.method },
+        'API key required for scope check'
+      );
       return reply.status(401).send({
         error: 'Unauthorized',
         message: 'API key authentication required',
@@ -20,6 +27,14 @@ export function requireScope(requiredScope: string) {
       request.apiKey.apiKey.assertHasScope(scope);
     } catch (error) {
       if (error instanceof InsufficientScopeError) {
+        logger.warn(
+          {
+            apiKeyId: request.apiKey.apiKey.id,
+            requiredScope,
+            path: request.url,
+          },
+          'Insufficient scope'
+        );
         return reply.status(403).send({
           error: 'Forbidden',
           message: error.message,
@@ -36,6 +51,10 @@ export function requireScope(requiredScope: string) {
 export function requireAnyScope(...requiredScopes: string[]) {
   return (request: FastifyRequest, reply: FastifyReply) => {
     if (!request.apiKey) {
+      logger.warn(
+        { path: request.url, method: request.method },
+        'API key required for scope check'
+      );
       return reply.status(401).send({
         error: 'Unauthorized',
         message: 'API key authentication required',
@@ -52,6 +71,14 @@ export function requireAnyScope(...requiredScopes: string[]) {
     });
 
     if (!hasAnyScope) {
+      logger.warn(
+        {
+          apiKeyId: request.apiKey.apiKey.id,
+          requiredScopes,
+          path: request.url,
+        },
+        'Insufficient scope (requireAnyScope)'
+      );
       return reply.status(403).send({
         error: 'Forbidden',
         message: `Required scope: one of ${requiredScopes.join(', ')}`,
@@ -66,6 +93,10 @@ export function requireAnyScope(...requiredScopes: string[]) {
 export function requireAllScopes(...requiredScopes: string[]) {
   return (request: FastifyRequest, reply: FastifyReply) => {
     if (!request.apiKey) {
+      logger.warn(
+        { path: request.url, method: request.method },
+        'API key required for scope check'
+      );
       return reply.status(401).send({
         error: 'Unauthorized',
         message: 'API key authentication required',
@@ -86,6 +117,14 @@ export function requireAllScopes(...requiredScopes: string[]) {
     });
 
     if (missingScopes.length > 0) {
+      logger.warn(
+        {
+          apiKeyId: request.apiKey.apiKey.id,
+          missingScopes,
+          path: request.url,
+        },
+        'Insufficient scope (requireAllScopes)'
+      );
       return reply.status(403).send({
         error: 'Forbidden',
         message: `Missing required scopes: ${missingScopes.join(', ')}`,

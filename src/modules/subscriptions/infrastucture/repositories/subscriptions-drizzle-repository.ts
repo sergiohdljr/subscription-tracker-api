@@ -3,11 +3,11 @@ import type { SubscriptionRepository } from '../../application/repositories/subs
 import type { Subscription } from '../../domain/entity/subscription';
 import type * as schema from '../../../../shared/infrastructure/db/drizzle/schemas/schema';
 import { subscriptions as subscriptionsSchema } from '../../../../shared/infrastructure/db/drizzle/schemas';
-import { and, eq, lte, or, sql } from 'drizzle-orm';
+import { and, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { SubscriptionMapper } from '@/shared/infrastructure/db/drizzle/mappers/subscription-mappers';
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
-  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) {}
+  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) { }
 
   async save(subscription: Subscription): Promise<Record<string, number>> {
     const data = SubscriptionMapper.toInsert(subscription);
@@ -65,7 +65,8 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
       .where(
         and(
           eq(subscriptionsSchema.status, 'ACTIVE'),
-          eq(subscriptionsSchema.startDate, sql`CURRENT_DATE + INTERVAL '${daysBefore} days'`)
+          lte(subscriptionsSchema.nextBillingDate, sql`CURRENT_DATE + INTERVAL '${daysBefore} days'`),
+          isNull(subscriptionsSchema.renewalNotifiedAt)
         )
       );
 

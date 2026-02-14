@@ -197,9 +197,7 @@ describe('SubscriptionsDrizzleRepository', () => {
       const mockSet = {
         set: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
-        returning: jest.fn().mockResolvedValue([
-          { subscriptionsSchema: updatedRow },
-        ]),
+        returning: jest.fn().mockResolvedValue([{ subscriptionsSchema: updatedRow }]),
       };
 
       mockDb.update.mockReturnValue(mockSet as any);
@@ -430,5 +428,3 @@ describe('SubscriptionsDrizzleRepository', () => {
     });
   });
 });
-
-

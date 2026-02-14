@@ -5,7 +5,7 @@ import { createContextLogger } from '@/shared/infrastructure/logging/logger';
 const logger = createContextLogger('process-renewals-usecase');
 
 export class ProcessRenewalsUseCase {
-  constructor(private readonly subscriptionsRepository: SubscriptionRepository) { }
+  constructor(private readonly subscriptionsRepository: SubscriptionRepository) {}
 
   async run(today: Date = new Date()) {
     logger.info({ date: today.toISOString() }, 'Starting subscription renewals processing');

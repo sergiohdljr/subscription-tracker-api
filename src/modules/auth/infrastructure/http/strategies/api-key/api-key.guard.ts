@@ -4,6 +4,9 @@ import { ApiKeyHash } from '@/modules/identity/domain/value-objects/api-key-hash
 import type { ApiKeyContext } from './api-key.context';
 import { ApiKeyExpiredError } from '@/modules/identity/domain/errors/api-key-expired.error';
 import { ApiKeyRevokedError } from '@/modules/identity/domain/errors/api-key-revoked.error';
+import { createContextLogger } from '@/shared/infrastructure/logging/logger';
+
+const logger = createContextLogger('api-key-guard');
 
 /**
  * Extracts API key from request headers
@@ -32,6 +35,7 @@ export async function apiKeyGuard(
   const plainApiKey = extractApiKeyFromRequest(request);
 
   if (!plainApiKey) {
+    logger.warn({ path: request.url, method: request.method }, 'API key missing from request');
     return reply.status(401).send({
       error: 'Unauthorized',
       message: 'API key is required. Provide it via X-API-Key header',
@@ -46,6 +50,7 @@ export async function apiKeyGuard(
     const apiKey = await apiKeyRepository.findByHash(hash.toString());
 
     if (!apiKey) {
+      logger.warn({ path: request.url, method: request.method }, 'Invalid API key');
       return reply.status(401).send({
         error: 'Unauthorized',
         message: 'Invalid API key',
@@ -57,12 +62,14 @@ export async function apiKeyGuard(
       apiKey.assertUsable();
     } catch (error) {
       if (error instanceof ApiKeyRevokedError) {
+        logger.warn({ apiKeyId: apiKey.id, path: request.url }, 'Revoked API key attempt');
         return reply.status(401).send({
           error: 'Unauthorized',
           message: 'API key has been revoked',
         });
       }
       if (error instanceof ApiKeyExpiredError) {
+        logger.warn({ apiKeyId: apiKey.id, path: request.url }, 'Expired API key attempt');
         return reply.status(401).send({
           error: 'Unauthorized',
           message: 'API key has expired',
@@ -83,15 +90,22 @@ export async function apiKeyGuard(
     };
 
     request.apiKey = context;
+
+    logger.debug(
+      { apiKeyId: apiKey.id, ownerId: apiKey.owner, path: request.url },
+      'API key authenticated'
+    );
   } catch (error) {
     // Handle invalid API key format
     if (error instanceof Error && error.message === 'Invalid API key') {
+      logger.warn({ path: request.url }, 'Invalid API key format');
       return reply.status(401).send({
         error: 'Unauthorized',
         message: 'Invalid API key format',
       });
     }
 
+    logger.error({ err: error, path: request.url }, 'Failed to validate API key');
     return reply.status(500).send({
       error: 'Internal server error',
       message: 'Failed to validate API key',

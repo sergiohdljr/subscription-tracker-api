@@ -1,6 +1,9 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { auth } from '@/modules/auth/infrastructure/better-auth/better-auth-config';
 import { UnauthorizedError, InternalServerError } from '../errors';
+import { createContextLogger } from '../../logging/logger';
+
+const logger = createContextLogger('better-auth-middleware');
 
 export async function betterAuthMiddleware(request: FastifyRequest, _reply: FastifyReply) {
   if (
@@ -19,6 +22,7 @@ export async function betterAuthMiddleware(request: FastifyRequest, _reply: Fast
     });
 
     if (!session) {
+      logger.warn({ path: request.url, method: request.method }, 'Session authentication failed');
       throw new UnauthorizedError('Authentication required');
     }
 
@@ -29,6 +33,7 @@ export async function betterAuthMiddleware(request: FastifyRequest, _reply: Fast
       throw error;
     }
     // Erro desconhecido do better-auth
+    logger.error({ err: error, path: request.url }, 'Failed to validate session authentication');
     throw new InternalServerError('Failed to validate authentication');
   }
 }

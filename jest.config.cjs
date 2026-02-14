@@ -40,7 +40,6 @@ module.exports = {
   // test/modules/<module>/** and test/shared/**
   // Performance optimizations
   maxWorkers: '50%',
-  runInBand: false, // Run tests in parallel
   // Timeout for tests (5s should be enough for unit tests)
   testTimeout: 5000,
   coverageReporters: ['text', 'lcov'],

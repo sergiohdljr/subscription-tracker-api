@@ -1,9 +1,9 @@
-import type pino from 'pino';
+import type { Logger as PinoLogger } from 'pino';
 import { createLoggerConfig, createPinoLogger } from './logger-config';
 
 export { createLoggerConfig };
 
-export type Logger = pino.Logger;
+export type Logger = PinoLogger;
 
 let loggerInstance: Logger | null = null;
 
@@ -12,7 +12,7 @@ export function getLogger(): Logger {
     const config = createLoggerConfig();
     loggerInstance = createPinoLogger(config);
   }
-  return loggerInstance;
+  return loggerInstance as Logger;
 }
 
 export function createChildLogger(bindings: Record<string, unknown>): Logger {

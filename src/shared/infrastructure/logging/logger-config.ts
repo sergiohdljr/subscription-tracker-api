@@ -1,4 +1,4 @@
-import pino from 'pino';
+import pino = require('pino');
 import type { LogLevel } from './types';
 
 export interface LoggerConfig {
@@ -7,11 +7,14 @@ export interface LoggerConfig {
   environment: string;
 }
 
-const VALID_LOG_LEVELS: LogLevel[] = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+const VALID_LOG_LEVELS: LogLevel[] = ['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'];
 
 function getDefaultLogLevel(environment: string): LogLevel {
   if (environment === 'production') {
     return 'info';
+  }
+  if (environment === 'test') {
+    return 'silent'; // Sem logs em testes
   }
   return 'debug';
 }
@@ -34,7 +37,7 @@ function validateLogLevel(level: string | undefined): LogLevel {
 }
 
 function shouldUsePrettyPrint(environment: string): boolean {
-  return environment !== 'production';
+  return environment !== 'production' && environment !== 'test';
 }
 
 export function createLoggerConfig(): LoggerConfig {

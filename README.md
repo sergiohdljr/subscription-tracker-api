@@ -190,6 +190,10 @@ BETTER_AUTH_URL=http://localhost:8080
 
 # Email (Resend)
 RESEND_API_KEY=your-resend-api-key
+
+# Logging
+LOG_LEVEL=debug
+NODE_ENV=development
 ```
 
 ### Variáveis de Ambiente
@@ -202,6 +206,8 @@ RESEND_API_KEY=your-resend-api-key
 | `BETTER_AUTH_SECRET` | Chave secreta para Better Auth | - |
 | `BETTER_AUTH_URL` | URL do Better Auth | - |
 | `RESEND_API_KEY` | Chave da API Resend | - |
+| `LOG_LEVEL` | Nível de log (trace, debug, info, warn, error, fatal) | `debug` (dev) / `info` (prod) |
+| `NODE_ENV` | Ambiente de execução (development, production) | `development` |
 
 ## ▶️ Executando o Projeto
 

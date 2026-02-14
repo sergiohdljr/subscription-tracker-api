@@ -4,9 +4,6 @@ import { ApiKeyHash } from '@/modules/identity/domain/value-objects/api-key-hash
 import type { ApiKeyContext } from './api-key.context';
 import { ApiKeyExpiredError } from '@/modules/identity/domain/errors/api-key-expired.error';
 import { ApiKeyRevokedError } from '@/modules/identity/domain/errors/api-key-revoked.error';
-import { createContextLogger } from '@/shared/infrastructure/logging/logger';
-
-const logger = createContextLogger('api-key-guard');
 
 /**
  * Extracts API key from request headers
@@ -95,13 +92,6 @@ export async function apiKeyGuard(
       });
     }
 
-    logger.error(
-      {
-        err: error,
-        hasApiKey: !!plainApiKey,
-      },
-      'API Key Guard Error'
-    );
     return reply.status(500).send({
       error: 'Internal server error',
       message: 'Failed to validate API key',

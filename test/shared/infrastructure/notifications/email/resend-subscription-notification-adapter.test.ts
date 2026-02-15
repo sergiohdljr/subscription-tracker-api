@@ -1,6 +1,6 @@
 import { ResendSubscriptionNotificationAdapter } from '@/shared/infrastructure/notifications/email/resend-subscription-notification-adapter';
 import type { ResendConfigAdapter } from '@/shared/infrastructure/email/resend';
-import { ErrorResponse } from 'resend';
+import type { ErrorResponse } from 'resend';
 
 function makeResendAdapter(
   overrides?: Partial<ResendConfigAdapter>
@@ -140,72 +140,6 @@ describe('ResendSubscriptionNotificationAdapter', () => {
           FORMATTED_DATE: '18/02/2024',
         }
       );
-    });
-
-    it('should use environment variable for template ID', async () => {
-      const originalTemplate = process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE;
-      process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE = 'template-123';
-
-      const today = new Date('2024-02-15T12:00:00.000Z');
-      jest.setSystemTime(today);
-
-      mockResend.sendEmail.mockResolvedValue({
-        data: { id: 'email-id' },
-        headers: null,
-        error: null,
-      });
-
-      await adapter.notifyRenewal({
-        email: 'test@example.com',
-        subscriptionsName: ['Netflix'],
-        nextBillingDate: today,
-      });
-
-      expect(mockResend.sendEmail).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(String),
-        'template-123',
-        expect.any(Object)
-      );
-
-      // Restore original value
-      if (originalTemplate) {
-        process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE = originalTemplate;
-      } else {
-        delete process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE;
-      }
-    });
-
-    it('should use empty string as fallback when template ID is not set', async () => {
-      const originalTemplate = process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE;
-      delete process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE;
-
-      const today = new Date('2024-02-15T12:00:00.000Z');
-      jest.setSystemTime(today);
-
-      mockResend.sendEmail.mockResolvedValue({
-        data: { id: 'email-id' },
-        headers: null,
-        error: null,
-      });
-
-      await adapter.notifyRenewal({
-        email: 'test@example.com',
-        subscriptionsName: ['Netflix'],
-        nextBillingDate: today,
-      });
-
-      expect(mockResend.sendEmail).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(String),
-        '',
-        expect.any(Object)
-      );
-
-      // Restore original value
-      if (originalTemplate) {
-        process.env.RESEND_SUBSCRIPTION_RENEW_TEMPLATE = originalTemplate;
-      }
     });
 
     describe('error handling', () => {

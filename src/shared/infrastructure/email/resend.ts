@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import * as dotenv from 'dotenv';
 
 export class ResendConfigAdapter {
-  constructor(private readonly API_KEY: string) { }
+  constructor(private readonly API_KEY: string) {}
 
   getInstance() {
     return new Resend(this.API_KEY);
@@ -13,7 +13,12 @@ export class ResendConfigAdapter {
     return template;
   }
 
-  async sendEmail(email: string, subject: string, templateId: string, data: Record<string, string | number>) {
+  async sendEmail(
+    email: string,
+    subject: string,
+    templateId: string,
+    data: Record<string, string | number>
+  ) {
     const template = await this.getTemplate(templateId);
     if (!template.data) {
       throw new Error('Template not found');

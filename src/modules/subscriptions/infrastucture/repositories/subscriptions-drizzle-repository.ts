@@ -7,7 +7,7 @@ import { and, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { SubscriptionMapper } from '@/shared/infrastructure/db/drizzle/mappers/subscription-mappers';
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
-  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) { }
+  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) {}
 
   async save(subscription: Subscription): Promise<Record<string, number>> {
     const data = SubscriptionMapper.toInsert(subscription);

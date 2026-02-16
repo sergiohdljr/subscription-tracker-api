@@ -129,7 +129,6 @@ describe('NotifySubscriptionsUseCase', () => {
       // Should send notification with grouped subscriptions
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledTimes(1);
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledWith({
-        userId: 'user-1',
         email: 'user1@example.com',
         subscriptionsName: ['Netflix', 'Spotify'],
         nextBillingDate,
@@ -186,13 +185,11 @@ describe('NotifySubscriptionsUseCase', () => {
       // Should send separate notifications for each user
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledTimes(2);
       expect(mockNotificationService.notifyRenewal).toHaveBeenNthCalledWith(1, {
-        userId: 'user-1',
         email: 'user1@example.com',
         subscriptionsName: ['Netflix'],
         nextBillingDate,
       });
       expect(mockNotificationService.notifyRenewal).toHaveBeenNthCalledWith(2, {
-        userId: 'user-2',
         email: 'user2@example.com',
         subscriptionsName: ['Spotify'],
         nextBillingDate,
@@ -296,7 +293,6 @@ describe('NotifySubscriptionsUseCase', () => {
       // Should only notify user-2
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledTimes(1);
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledWith({
-        userId: 'user-2',
         email: 'user2@example.com',
         subscriptionsName: ['Spotify'],
         nextBillingDate,
@@ -352,7 +348,6 @@ describe('NotifySubscriptionsUseCase', () => {
 
       // Should only notify for subscription2 (subscription1 already notified)
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledWith({
-        userId: 'user-1',
         email: 'user1@example.com',
         subscriptionsName: ['Spotify'],
         nextBillingDate,
@@ -407,7 +402,6 @@ describe('NotifySubscriptionsUseCase', () => {
 
       // Should only notify for active subscription
       expect(mockNotificationService.notifyRenewal).toHaveBeenCalledWith({
-        userId: 'user-1',
         email: 'user1@example.com',
         subscriptionsName: ['Netflix'],
         nextBillingDate,

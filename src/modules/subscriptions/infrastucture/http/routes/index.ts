@@ -13,10 +13,8 @@ export async function subscriptionsRoutes(app: FastifyInstance) {
     SubscriptionFactory.createListSubscriptionsController().handle(request, reply)
   );
 
-  app.post(
-    '/subscriptions/bulk',
-    async (request: FastifyRequest, reply: FastifyReply) =>
-      SubscriptionFactory.createBulkCreateSubscriptionsController().handle(request, reply)
+  app.post('/subscriptions/bulk', async (request: FastifyRequest, reply: FastifyReply) =>
+    SubscriptionFactory.createBulkCreateSubscriptionsController().handle(request, reply)
   );
 
   app.post(

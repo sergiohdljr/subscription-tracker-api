@@ -7,7 +7,7 @@ import { and, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { SubscriptionMapper } from '@/shared/infrastructure/db/drizzle/mappers/subscription-mappers';
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
-  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) { }
+  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) {}
 
   async save(subscription: Subscription): Promise<Record<string, number>> {
     const data = SubscriptionMapper.toInsert(subscription);
@@ -100,9 +100,12 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
   async saveMany(subscriptions: Subscription[]): Promise<Array<Record<string, number>>> {
     if (subscriptions.length === 0) return [];
 
-    return await this.drizzleConnection.insert(subscriptionsSchema).values(subscriptions.map(SubscriptionMapper.toInsert)).returning({
-      id: subscriptionsSchema.id,
-    });
+    return await this.drizzleConnection
+      .insert(subscriptionsSchema)
+      .values(subscriptions.map(SubscriptionMapper.toInsert))
+      .returning({
+        id: subscriptionsSchema.id,
+      });
   }
 
   async updateMany(subscriptions: Subscription[]): Promise<void> {

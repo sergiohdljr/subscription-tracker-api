@@ -7,7 +7,7 @@ import { and, eq, isNull, lte, or, sql } from 'drizzle-orm';
 import { SubscriptionMapper } from '@/shared/infrastructure/db/drizzle/mappers/subscription-mappers';
 
 export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
-  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) {}
+  constructor(public readonly drizzleConnection: NodePgDatabase<typeof schema>) { }
 
   async save(subscription: Subscription): Promise<Record<string, number>> {
     const data = SubscriptionMapper.toInsert(subscription);
@@ -59,16 +59,17 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
   }
 
   async findSubscriptionsToNotify(daysBefore: number = 7): Promise<Subscription[]> {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + daysBefore);
+    targetDate.setHours(23, 59, 59, 999);
+
     const rows = await this.drizzleConnection
       .select()
       .from(subscriptionsSchema)
       .where(
         and(
           eq(subscriptionsSchema.status, 'ACTIVE'),
-          lte(
-            subscriptionsSchema.nextBillingDate,
-            sql`CURRENT_DATE + INTERVAL '${daysBefore} days'`
-          ),
+          lte(subscriptionsSchema.nextBillingDate, targetDate),
           isNull(subscriptionsSchema.renewalNotifiedAt)
         )
       );

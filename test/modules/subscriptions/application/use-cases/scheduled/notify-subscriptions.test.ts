@@ -59,6 +59,7 @@ describe('NotifySubscriptionsUseCase', () => {
     mockSubscriptionRepository = {
       findSubscriptionsToNotify: jest.fn(),
       save: jest.fn(),
+      saveMany: jest.fn(),
       updateMany: jest.fn(),
       findById: jest.fn(),
       findByUserId: jest.fn(),

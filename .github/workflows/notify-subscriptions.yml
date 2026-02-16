@@ -1,0 +1,27 @@
+name: Notify Subscriptions
+
+on:
+  schedule:
+    # Notificar subscriptions às 7h da manhã (UTC)
+    # Para ajustar o fuso horário, modifique o horário UTC
+    # Exemplo: 7h UTC = 4h BRT (UTC-3) ou 3h BRT (UTC-4 no horário de verão)
+    - cron: '0 7 * * *'
+  workflow_dispatch: # Permite execução manual
+
+jobs:
+  notify-subscriptions:
+    name: Notify Subscriptions
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Notify subscriptions
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:8080' }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          chmod +x scripts/notify-subscriptions.sh
+          ./scripts/notify-subscriptions.sh
+

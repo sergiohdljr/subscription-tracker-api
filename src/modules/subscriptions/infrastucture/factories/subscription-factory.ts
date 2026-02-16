@@ -5,10 +5,14 @@ import { ApiKeyDrizzleRepository } from '@/modules/identity/infrastructure/repos
 import { CreateSubscriptionUseCase } from '@/modules/subscriptions/application/use-cases/create-subscription-usecase';
 import { ListSubscriptionsUseCase } from '@/modules/subscriptions/application/use-cases/list-subscriptions';
 import { ProcessRenewalsUseCase } from '@/modules/subscriptions/application/use-cases/scheduled/ process-renewals';
+import { NotifySubscriptionsUseCase } from '@/modules/subscriptions/application/use-cases/scheduled/notify-subscriptions';
 import { CreateSubscriptionController } from '../http/controllers/create-subscription-controller';
 import { ListSubscriptionsController } from '../http/controllers/list-subscriptions-controller';
 import { ProcessRenewalsController } from '../http/controllers/process-renewals-controller';
+import { NotifySubscriptionsController } from '../http/controllers/notify-subscriptions-controller';
 import { createApiKeyGuard } from '@/modules/auth/infrastructure/http/strategies/api-key/api-key.guard';
+import { ResendSubscriptionNotificationAdapter } from '@/shared/infrastructure/notifications/email/resend-subscription-notification-adapter';
+import { resendAdapter } from '@/shared/infrastructure/email/resend';
 
 /**
  * Factory for creating subscription-related dependencies
@@ -59,6 +63,13 @@ export class SubscriptionFactory {
     return new ProcessRenewalsUseCase(subscriptionsRepo);
   }
 
+  static createNotifySubscriptionsUseCase(): NotifySubscriptionsUseCase {
+    const subscriptionsRepo = this.getSubscriptionsRepository();
+    const userRepo = this.getUserRepository();
+    const notificationService = new ResendSubscriptionNotificationAdapter(resendAdapter);
+    return new NotifySubscriptionsUseCase(subscriptionsRepo, userRepo, notificationService);
+  }
+
   // HTTP Controllers (specific to HTTP layer)
   static createCreateSubscriptionController(): CreateSubscriptionController {
     const useCase = this.createCreateSubscriptionUseCase();
@@ -73,6 +84,11 @@ export class SubscriptionFactory {
   static createProcessRenewalsController(): ProcessRenewalsController {
     const useCase = this.createProcessRenewalsUseCase();
     return new ProcessRenewalsController(useCase);
+  }
+
+  static createNotifySubscriptionsController(): NotifySubscriptionsController {
+    const useCase = this.createNotifySubscriptionsUseCase();
+    return new NotifySubscriptionsController(useCase);
   }
 
   // Guards (specific to HTTP layer)

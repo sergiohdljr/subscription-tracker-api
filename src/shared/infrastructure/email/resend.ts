@@ -8,27 +8,17 @@ export class ResendConfigAdapter {
     return new Resend(this.API_KEY);
   }
 
-  async getTemplate(templateId: string) {
-    const template = await this.getInstance().templates.get(templateId);
-    return template;
-  }
-
   async sendEmail(
     email: string,
     subject: string,
     templateId: string,
     data: Record<string, string | number>
   ) {
-    const template = await this.getTemplate(templateId);
-    if (!template.data) {
-      throw new Error('Template not found');
-    }
-
     return this.getInstance().emails.send({
       subject,
-      from: process.env.RESEND_FROM_EMAIL ?? 'no-reply@subscription-tracker.com',
+      from: process.env.RESEND_TEST_EMAIL,
       to: email,
-      template: { id: template.data.id, variables: data },
+      template: { id: templateId, variables: data },
     });
   }
 }

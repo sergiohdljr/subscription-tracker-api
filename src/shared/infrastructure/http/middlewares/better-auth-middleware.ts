@@ -11,7 +11,8 @@ export async function betterAuthMiddleware(request: FastifyRequest, _reply: Fast
     request.url.startsWith('/docs') ||
     request.url.startsWith('/documentation') ||
     request.url.startsWith('/health') ||
-    request.url.startsWith('/api/subscriptions/process-renewals')
+    request.url.startsWith('/api/subscriptions/process-renewals') ||
+    request.url.startsWith('/api/subscriptions/notify')
   ) {
     return;
   }

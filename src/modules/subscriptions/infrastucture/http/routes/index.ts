@@ -24,4 +24,16 @@ export async function subscriptionsRoutes(app: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) =>
       SubscriptionFactory.createProcessRenewalsController().handle(request, reply)
   );
+
+  app.post(
+    '/subscriptions/notify',
+    {
+      preHandler: [
+        SubscriptionFactory.createApiKeyGuard(),
+        requireScope('scheduled:process-renewals'),
+      ],
+    },
+    async (request: FastifyRequest, reply: FastifyReply) =>
+      SubscriptionFactory.createNotifySubscriptionsController().handle(request, reply)
+  );
 }

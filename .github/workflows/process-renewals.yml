@@ -1,0 +1,27 @@
+name: Process Subscription Renewals
+
+on:
+  schedule:
+    # Processar renovações às 5h da manhã (UTC)
+    # Para ajustar o fuso horário, modifique o horário UTC
+    # Exemplo: 5h UTC = 2h BRT (UTC-3) ou 1h BRT (UTC-4 no horário de verão)
+    - cron: '0 5 * * *'
+  workflow_dispatch: # Permite execução manual
+
+jobs:
+  process-renewals:
+    name: Process Renewals
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Process subscription renewals
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:8080' }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          chmod +x scripts/process-renewals.sh
+          ./scripts/process-renewals.sh
+

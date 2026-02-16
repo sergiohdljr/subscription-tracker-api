@@ -25,3 +25,4 @@ export default defineConfig({
     'pg-native', // Dependência nativa que não deve ser bundled
   ],
 });
+

@@ -97,6 +97,17 @@ export class SubscriptionsDrizzleRepository implements SubscriptionRepository {
     return rows.map(SubscriptionMapper.toDomain);
   }
 
+  async saveMany(subscriptions: Subscription[]): Promise<Array<Record<string, number>>> {
+    if (subscriptions.length === 0) return [];
+
+    return await this.drizzleConnection
+      .insert(subscriptionsSchema)
+      .values(subscriptions.map(SubscriptionMapper.toInsert))
+      .returning({
+        id: subscriptionsSchema.id,
+      });
+  }
+
   async updateMany(subscriptions: Subscription[]): Promise<void> {
     if (subscriptions.length === 0) return;
 

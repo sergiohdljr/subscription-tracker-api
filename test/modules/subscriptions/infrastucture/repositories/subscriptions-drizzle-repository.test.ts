@@ -367,6 +367,80 @@ describe('SubscriptionsDrizzleRepository', () => {
     });
   });
 
+  describe('saveMany', () => {
+    it('should return empty array when subscriptions array is empty', async () => {
+      const result = await repository.saveMany([]);
+
+      expect(result).toEqual([]);
+      expect(mockDb.insert).not.toHaveBeenCalled();
+    });
+
+    it('should save multiple subscriptions in a single insert and return their ids', async () => {
+      const subscription1 = makeSubscription({
+        id: 1,
+        userId: 'user-1',
+        name: 'Netflix',
+        status: 'ACTIVE',
+      });
+
+      const subscription2 = makeSubscription({
+        id: 2,
+        userId: 'user-1',
+        name: 'Spotify',
+        status: 'ACTIVE',
+      });
+
+      const mockReturning = {
+        returning: jest.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]),
+      };
+
+      const mockValues = {
+        values: jest.fn().mockReturnValue(mockReturning),
+      };
+
+      mockDb.insert.mockReturnValue(mockValues as any);
+
+      const result = await repository.saveMany([subscription1, subscription2]);
+
+      expect(mockDb.insert).toHaveBeenCalledTimes(1);
+      expect(mockValues.values).toHaveBeenCalledTimes(1);
+      expect(mockReturning.returning).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([{ id: 1 }, { id: 2 }]);
+    });
+
+    it('should throw error if insert fails', async () => {
+      const subscription1 = makeSubscription({
+        id: 1,
+        userId: 'user-1',
+        name: 'Netflix',
+        status: 'ACTIVE',
+      });
+
+      const subscription2 = makeSubscription({
+        id: 2,
+        userId: 'user-1',
+        name: 'Spotify',
+        status: 'ACTIVE',
+      });
+
+      const mockReturning = {
+        returning: jest.fn().mockRejectedValue(new Error('Database error')),
+      };
+
+      const mockValues = {
+        values: jest.fn().mockReturnValue(mockReturning),
+      };
+
+      mockDb.insert.mockReturnValue(mockValues as any);
+
+      await expect(repository.saveMany([subscription1, subscription2])).rejects.toThrow(
+        'Database error'
+      );
+
+      expect(mockDb.insert).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('updateMany', () => {
     it('should return early when subscriptions array is empty', async () => {
       await repository.updateMany([]);

@@ -6,10 +6,12 @@ import { CreateSubscriptionUseCase } from '@/modules/subscriptions/application/u
 import { ListSubscriptionsUseCase } from '@/modules/subscriptions/application/use-cases/list-subscriptions';
 import { ProcessRenewalsUseCase } from '@/modules/subscriptions/application/use-cases/scheduled/ process-renewals';
 import { NotifySubscriptionsUseCase } from '@/modules/subscriptions/application/use-cases/scheduled/notify-subscriptions';
+import { BulkCreateSubscriptionsUseCase } from '@/modules/subscriptions/application/use-cases/bulk-create-subscriptions-usecase';
 import { CreateSubscriptionController } from '../http/controllers/create-subscription-controller';
 import { ListSubscriptionsController } from '../http/controllers/list-subscriptions-controller';
 import { ProcessRenewalsController } from '../http/controllers/process-renewals-controller';
 import { NotifySubscriptionsController } from '../http/controllers/notify-subscriptions-controller';
+import { BulkCreateSubscriptionsController } from '../http/controllers/bulk-create-subscriptions-controller';
 import { createApiKeyGuard } from '@/modules/auth/infrastructure/http/strategies/api-key/api-key.guard';
 import { ResendSubscriptionNotificationAdapter } from '@/shared/infrastructure/notifications/email/resend-subscription-notification-adapter';
 import { resendAdapter } from '@/shared/infrastructure/email/resend';
@@ -70,6 +72,12 @@ export class SubscriptionFactory {
     return new NotifySubscriptionsUseCase(subscriptionsRepo, userRepo, notificationService);
   }
 
+  static createBulkCreateSubscriptionsUseCase(): BulkCreateSubscriptionsUseCase {
+    const subscriptionsRepo = this.getSubscriptionsRepository();
+    const userRepo = this.getUserRepository();
+    return new BulkCreateSubscriptionsUseCase(subscriptionsRepo, userRepo);
+  }
+
   // HTTP Controllers (specific to HTTP layer)
   static createCreateSubscriptionController(): CreateSubscriptionController {
     const useCase = this.createCreateSubscriptionUseCase();
@@ -89,6 +97,11 @@ export class SubscriptionFactory {
   static createNotifySubscriptionsController(): NotifySubscriptionsController {
     const useCase = this.createNotifySubscriptionsUseCase();
     return new NotifySubscriptionsController(useCase);
+  }
+
+  static createBulkCreateSubscriptionsController(): BulkCreateSubscriptionsController {
+    const useCase = this.createBulkCreateSubscriptionsUseCase();
+    return new BulkCreateSubscriptionsController(useCase);
   }
 
   // Guards (specific to HTTP layer)

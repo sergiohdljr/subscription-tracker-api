@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import multipart from '@fastify/multipart';
 import { swaggerPlugin } from './shared/infrastructure/docs/swagger';
 import { betterAuthPlugin } from '@/modules/auth/infrastructure/http/plugins/better-auth-plugin';
 import { betterAuthMiddleware } from './shared/infrastructure/http/middlewares/better-auth-middleware';
@@ -28,6 +29,12 @@ async function bootstrap() {
   });
 
   setupErrorHandler(server);
+
+  await server.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+  });
 
   await server.register(swaggerPlugin);
   await server.register(betterAuthPlugin);

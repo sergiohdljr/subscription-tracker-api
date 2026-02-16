@@ -41,6 +41,7 @@ function makeSubscription(params: {
 function makeRepo(overrides?: Partial<SubscriptionRepository>): SubscriptionRepository {
   return {
     save: jest.fn(),
+    saveMany: jest.fn(),
     updateMany: jest.fn(),
     findById: jest.fn(),
     findByUserId: jest.fn(),

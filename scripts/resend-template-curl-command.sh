@@ -28,3 +28,8 @@ curl -X POST 'https://api.resend.com/templates' \
   ]
 }'
 
+# Publish template
+
+curl -X POST 'https://api.resend.com/templates/2b494c64-a24e-418c-af69-48eacb594947/publish' \
+ -H 'Authorization: Bearer ' \
+ -H 'Content-Type: application/json'

@@ -30,7 +30,6 @@ echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
 # Fazer requisição
 RESPONSE=$(curl -s -w "\n%{http_code}" \
   -X POST \
-  -H "Content-Type: application/json" \
   -H "X-API-Key: ${API_KEY}" \
   "${ENDPOINT}")
 

@@ -8,6 +8,28 @@ const logger = createContextLogger('error-handler');
 
 export function setupErrorHandler(server: FastifyInstance) {
   server.setErrorHandler((error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
+    // Handle content-type parser errors for multipart requests
+    if (error.code === 'FST_ERR_CTP_INVALID_MEDIA_TYPE') {
+      const response: ErrorResponse = {
+        error: 'UnsupportedMediaType',
+        message: 'Content-Type not supported. For file uploads, use multipart/form-data.',
+        code: 'UNSUPPORTED_MEDIA_TYPE',
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      };
+
+      logger.warn(
+        {
+          url: request.url,
+          method: request.method,
+          contentType: request.headers['content-type'],
+        },
+        'Unsupported media type'
+      );
+
+      return reply.status(415).send(response);
+    }
+
     if (error.validation) {
       const response: ErrorResponse = {
         error: 'ValidationError',

@@ -1,5 +1,6 @@
 import 'fastify';
 import { ApiKeyContext } from '@/modules/auth/infrastructure/http/strategies/api-key/api-key.context';
+import type { ParsedCSVData } from '@/modules/subscriptions/infrastucture/http/middlewares/validate-csv-file.middleware';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -13,5 +14,6 @@ declare module 'fastify' {
       updatedAt: Date;
     };
     apiKey?: ApiKeyContext;
+    csvData?: ParsedCSVData;
   }
 }

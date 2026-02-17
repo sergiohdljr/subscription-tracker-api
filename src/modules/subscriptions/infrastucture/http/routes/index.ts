@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { SubscriptionFactory } from '../../factories/subscription-factory';
 import { requireScope } from '@/modules/auth/infrastructure/http/strategies/api-key/scope-guard';
+import { validateCsvFileMiddleware } from '../middlewares/validate-csv-file.middleware';
 
 export async function subscriptionsRoutes(app: FastifyInstance) {
   // Create controllers and guards using factory
@@ -13,8 +14,13 @@ export async function subscriptionsRoutes(app: FastifyInstance) {
     SubscriptionFactory.createListSubscriptionsController().handle(request, reply)
   );
 
-  app.post('/subscriptions/bulk', async (request: FastifyRequest, reply: FastifyReply) =>
-    SubscriptionFactory.createBulkCreateSubscriptionsController().handle(request, reply)
+  app.post(
+    '/subscriptions/bulk',
+    {
+      preHandler: [validateCsvFileMiddleware],
+    },
+    async (request: FastifyRequest, reply: FastifyReply) =>
+      SubscriptionFactory.createBulkCreateSubscriptionsController().handle(request, reply)
   );
 
   app.post(

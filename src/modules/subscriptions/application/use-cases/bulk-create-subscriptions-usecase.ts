@@ -29,7 +29,7 @@ export class BulkCreateSubscriptionsUseCase {
   constructor(
     private readonly subscriptionsRepository: SubscriptionRepository,
     private readonly userRepository: UserRepositoryInterface
-  ) {}
+  ) { }
 
   async run(subscriptions: BulkCreateSubscriptionInput[]): Promise<BulkCreateResult> {
     if (subscriptions.length === 0) {

@@ -30,6 +30,14 @@ async function bootstrap() {
 
   setupErrorHandler(server);
 
+  server.addContentTypeParser(
+    /^multipart\/form-data/,
+    { parseAs: 'buffer' },
+    (_req, body, done) => {
+      done(null, body);
+    }
+  );
+
   await server.register(multipart, {
     limits: {
       fileSize: 10 * 1024 * 1024, // 10MB
